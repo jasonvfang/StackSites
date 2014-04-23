@@ -39,5 +39,3 @@ def register_loggers(app):
     fh.setLevel(logging.ERROR)
     fh.setFormatter(fmt)
     app.logger.addHandler(fh)
-
-import views
