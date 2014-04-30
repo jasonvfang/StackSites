@@ -1,0 +1,68 @@
+
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class='col-lg-4 col-md-6 col-sm-6 col-xs-12'>
+        <h1>Create an Account</h1>
+        <form id="registerForm" role="form" method="POST" action="">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <label for="inputUsername">Username</label>
+                {% if form.username.errors %}
+                    {% for error in form.username.errors %}
+                    <p class='text-danger'>{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+                {{ form.username(placeholder="Username", type="text", class="form-control") }}
+            </div>
+
+            <div class="form-group">
+                <label for="inputEmail">Email Address</label>
+                {% if form.email.errors %}
+                    {% for error in form.email.errors %}
+                    <p class='text-danger'>{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+                {{ form.email(placeholder="Email Address", type="email", class="form-control") }}
+            </div>
+
+            <div class="form-group">
+                <label for="inputPassword">Password</label>
+                {% if form.password.errors %}
+                    {% for error in form.password.errors %}
+                    <p class='text-danger'>{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+                {{ form.password(placeholder="Password", type="password", class="form-control") }}
+            </div>
+
+            <div class="form-group">
+                <label for="inputConfirmPassword">Confirm</label>
+                {% if form.confirm.errors %}
+                    {% for error in form.confirm.errors %}
+                    <p class='text-danger'>{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+                {{ form.confirm(placeholder="Confirm Password", type="password", class="form-control") }}
+            </div>
+            <button type="submit" id="registerButton" class="btn btn-primary"><i class="fa fa-check-circle"></i> Register</button>
+        </form>
+        <hr>
+        <p class="text-info">Already registered? Return to the <a href="{{ url_for('public.home') }}">home page</a> to login.</p>
+    </div>
+    <div class='colg-lg-6 col-md-6 col-sm-6 hidden-xs'>
+        <h2>Benefits of creating an account</h2>
+        <ul>
+            <h3><i class='fa fa-comment'></i> Benefit 1</h3>
+                <p>Look at all the benefits!</p>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script type='text/javascript'>
+    buttonClick("#registerButton");
+</script> 
+{% endblock %}

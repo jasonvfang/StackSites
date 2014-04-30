@@ -1,0 +1,49 @@
+
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+        <h2>Send Activation Email</h2>
+        <p>If you lost the activation email, use this to send yourself another.</p>
+        <form role="form" id="resendForm" method="POST" action="{{ url_for('users.resend') }}">
+            {{ resendForm.hidden_tag() }}
+            <div class="form-group">
+                <label for="inputCredentials">Username or Email Address</label>
+                {% if resendForm.creds.errors %}
+                    {% for error in resendForm.creds.errors %}
+                    <p class="text-danger">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+                {{ resendForm.creds(type="text", placeholder="Username or Email", class="form-control", style="width: 50%;") }}
+            </div>
+            <button type="submit" id="resendButton" class="btn btn-primary"><i class="fa fa-envelope"></i> Activate Account</button>
+        </form>
+    </div>
+
+    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+        <h2>Forgot Password</h2>
+        <p>If you forgot your password, we can send you an email to reset it.</p>
+        <form role="form" id="passwordForm" method="POST" action="{{ url_for('users.send_password_reset') }}">
+            {{ passwordForm.hidden_tag() }}
+            <div class="form-group">
+                <label for="inputCredentials">Email Address</label>
+                {% if passwordForm.email.errors %}
+                    {% for error in passwordForm.email.errors %}
+                    <p class="text-danger">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+                {{ passwordForm.email(type="email", placeholder="Email Address", class="form-control", style="width: 50%;") }}
+            </div>
+            <button type="submit" id="resetButton" class="btn btn-primary"><i class="fa fa-envelope"></i> Reset Password</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script type='text/javascript'>
+    buttonClick("#resendButton");
+    buttonClick("#resetButton");
+</script> 
+{% endblock %}
