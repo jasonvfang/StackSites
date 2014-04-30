@@ -57,3 +57,6 @@ docs/_build/
 
 # SQLite test DBs
 *.db
+
+# Foreman env
+.env

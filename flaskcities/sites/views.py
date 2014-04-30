@@ -3,7 +3,7 @@ import ipdb
 import requests as r
 from flask import Blueprint, render_template, render_template_string, url_for, redirect, send_file
 
-from flaskcities.public.forms import NewSiteForm
+from .forms import NewSiteForm
 from .utils import upload_to_s3, get_index
 from flaskcities.utils import flash_errors
 

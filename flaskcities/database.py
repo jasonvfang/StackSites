@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .extensions import db
+from flaskcities.extensions import db
 
 
 class CRUDMixin(object):
@@ -14,12 +14,6 @@ class CRUDMixin(object):
         ):
             return cls.query.get(int(id))
         return None
-
-    @classmethod
-    def get_all(cls, limit=None):
-        if limit is None:
-            return cls.query.all()
-        return cls.query.limit(limit).all()
 
     @classmethod
     def create(cls, **kwargs):

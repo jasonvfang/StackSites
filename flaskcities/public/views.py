@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
+from flask import (Blueprint, request, render_template, flash,
+                   url_for, redirect)
+from flask.ext.login import login_user, login_required, logout_user, current_user
 
-from flask import Blueprint, render_template, url_for, redirect
+from flaskcities.users.forms import LoginForm
 
-from forms import NewSiteForm
+blueprint = Blueprint('public', __name__, static_folder="../static")
 
-blueprint = Blueprint('public', __name__)
 
-@blueprint.route('/')
+@blueprint.route("/", methods=["GET"])
 def home():
-    form = NewSiteForm()
-    return render_template('public/home.html', form=form)
+    form = LoginForm()
+    return render_template('public/index.html', loginForm=form)
