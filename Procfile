@@ -1,1 +1,1 @@
-web: gunicorn manage:app
+web: gunicorn flaskcities.app:create_app\(\) -b 0.0.0.0:$PORT -w 2
