@@ -40,4 +40,4 @@ def send_email(subject, body, address):
 
 
 def generate_secure_token(length=30):
-    return base64.urlsafe_b64encode(os.urandom(length))[:30]
+    return base64.urlsafe_b64encode(os.urandom(length))[:length]
