@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from flaskcities.database import db, CRUDMixin
 from flaskcities.extensions import bcrypt
 from flaskcities.users.utils import generate_secure_token
+from flaskcities.sites.models import Site
 
 
 class User(UserMixin, CRUDMixin, db.Model):
@@ -21,6 +22,8 @@ class User(UserMixin, CRUDMixin, db.Model):
     password_reset_token = db.Column(db.String(30), unique=True)
     password_reset_expiration = db.Column(db.DateTime())
 
+    sites = db.relationship('Site', backref='user')
+
     def __init__(self, username, email, password):
         self.username = username
         self.email = email
@@ -28,6 +31,7 @@ class User(UserMixin, CRUDMixin, db.Model):
         self.active = False
         self.roles = frozenset()
         self.set_password(password)
+        self.sites.append(Site('home', username))
 
     def set_password(self, password):
         self.pwdhash = bcrypt.generate_password_hash(password)
