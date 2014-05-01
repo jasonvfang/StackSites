@@ -22,6 +22,7 @@ gunicorn==18.0
 ipdb==0.8
 ipython==2.0.0
 itsdangerous==0.24
+psycopg2==2.5.2
 py-bcrypt==0.4
 requests==2.2.1
 webassets==0.9
