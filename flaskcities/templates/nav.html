@@ -23,11 +23,11 @@
 
       {% if current_user and current_user.is_authenticated() %}
       
-        <a class="btn btn-primary navbar-btn navbar-right" href="{{ url_for('users.logout') }}" id="signoutButton"><i class="fa fa-sign-out"></i> Sign Out</a>
+        <a class="btn btn-primary navbar-btn navbar-right" href="{{ url_for('users.logout') }}" id="logoutButton"><i class="fa fa-sign-out"></i> Log Out</a>
 
       {% elif loginForm %}
         <p class="navbar-text navbar-right"><a class="navbar-link" href="{{ url_for('users.login_help') }}">Can't log in?</a></p>
-        <a role="button" class="btn btn-sm btn-primary navbar-btn navbar-left" href="{{ url_for('users.register') }}">Create account</a>
+        <a role="button" class="btn btn-sm btn-primary navbar-btn navbar-left" href="{{ url_for('users.register') }}">Sign Up</a>
 
         <form id="loginForm" class="navbar-form form-inline navbar-right" method="POST" action="{{ url_for('users.login') }}">
           {{ loginForm.hidden_tag() }}
@@ -35,7 +35,7 @@
             {{ loginForm.creds(type='text', placeholder='Username or email', class='form-control') }}
             {{ loginForm.password(type='password', placeholder='Password', class='form-control') }}
           </div>
-          <button class="btn btn-sm btn-primary" id="submitButton" type="submit"><i class="fa fa-sign-in"></i> Sign In</button>
+          <button class="btn btn-sm btn-primary" id="loginButton" type="submit"><i class="fa fa-sign-in"></i> Log In</button>
         </form>
       {% endif %}
     </div>
