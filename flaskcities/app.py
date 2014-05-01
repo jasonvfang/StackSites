@@ -10,8 +10,9 @@ from flaskcities.extensions import db, bcrypt, login_manager, migrate, mail
 
 
 
-def create_app(config_object=DevConfig):
+def create_app():
     app = Flask(__name__)
+    config_object = DevConfig if os.environ.get('DEBUG') == 'True' else ProdConfig
     app.config.from_object(config_object)
     register_blueprints(app)
     register_extensions(app)
