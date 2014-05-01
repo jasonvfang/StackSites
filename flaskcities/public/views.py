@@ -4,13 +4,14 @@ from flask import (Blueprint, request, render_template, flash,
 from flask.ext.login import login_user, login_required, logout_user, current_user
 
 from flaskcities.users.forms import LoginForm
+from flaskcities.utils import is_auth
 
 blueprint = Blueprint('public', __name__, static_folder="../static")
 
 
 @blueprint.route("/", methods=["GET"])
 def home():
-    if current_user and current_user.is_authenticated():
+    if is_auth():
         return redirect(url_for('public.user_dashboard'))
     form = LoginForm()
     return render_template('public/index.html', loginForm=form)
