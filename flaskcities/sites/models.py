@@ -2,6 +2,7 @@
 from datetime import datetime
 
 from flaskcities.database import db, CRUDMixin
+from .utils import upload_index_for_new_site, make_s3_path
 
 
 class Site(CRUDMixin, db.Model):
@@ -12,10 +13,11 @@ class Site(CRUDMixin, db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, name):
+    def __init__(self, name, username):
         self.name = name
         self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
+        upload_index_for_new_site(username, name)
 
     def update_time(self):
         self.updated_at = datetime.utcnow()

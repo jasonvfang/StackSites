@@ -2,6 +2,8 @@ import boto
 import mimetypes
 from urlparse import urljoin
 
+from flask import current_app
+
 
 def get_bucket():
     """Returns a boto Bucket object."""
@@ -13,24 +15,17 @@ def get_bucket():
     return conn.get_bucket(bucket_name)
     
     
-def get_index(site):
-    bucket = get_bucket()
-    return make_s3_path(site, 'index.html')
+def upload_index_for_new_site(username, site_name):
+    index = current_app.open_resource('templates/new_site.html')
+    upload_to_s3(index, username, site_name, 'index.html')
     
     
-def get_files(site):
-    bucket = get_bucket()
-    files = bucket.list(prefix='{0}/'.format(site))
-    files = [make_s3_path(site, fname) for fname in files]
-    return files
-    
-    
-def upload_to_s3(file_obj, site, filename=None):
+def upload_to_s3(file_obj, username, site_name, filename=None):
     """Uploads the file_obj to an Amazon S3 bucket under filename if specified."""
     if not filename:
         filename = werkzeug.secure_filename(file_obj.filename)
-    filename = '{0}/{1}'.format(site, filename)
     mimetype = mimetypes.guess_type(filename)[0]
+    filename = '{0}/{1}/{2}'.format(username, site_name, filename)
     bucket = get_bucket()
     key = bucket.new_key(filename)
     key.set_metadata('Content-Type', mimetype)
@@ -39,9 +34,7 @@ def upload_to_s3(file_obj, site, filename=None):
     key.set_acl('public-read')
     
     
-def make_s3_path(site, filename):
-    from flask import current_app
-    app = current_app
+def make_s3_path(username, site_name, filename):
     """Creates a string combining the standard S3 URL and a filename to make a valid link."""
-    return urljoin('http://s3.amazonaws.com/{0}/{1}/'.format(app.config['BUCKET_NAME'], site),
-                    filename)
+    s3_path = "http://s3.amazonaws.com/{0}/{1}/{2}/".format(current_app.config['BUCKET_NAME'], username, site_name)
+    return urljoin(s3_path, filename)
