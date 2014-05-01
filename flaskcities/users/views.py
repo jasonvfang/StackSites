@@ -18,7 +18,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         login_user(form.user)
-        redirect_url = request.args.get('next') or url_for('public.home')
+        redirect_url = request.args.get('next') or url_for('public.user_dashboard')
         return redirect(redirect_url)
     else:
         flash_errors(form)

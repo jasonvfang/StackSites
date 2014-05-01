@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <div class='row'>
+    <div class='col-lg-5'>
+      <h3>Your Sites</h3>
+      <div class='table-responsive'>
+        <table class='table'>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Link</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>TRBS Homepage</td>
+              <td><a href="{{url_for('sites.view_site', site='trbs')}}">Link</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

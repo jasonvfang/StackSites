@@ -10,5 +10,13 @@ blueprint = Blueprint('public', __name__, static_folder="../static")
 
 @blueprint.route("/", methods=["GET"])
 def home():
+    if current_user and current_user.is_authenticated():
+        return redirect(url_for('public.user_dashboard'))
     form = LoginForm()
     return render_template('public/index.html', loginForm=form)
+
+
+@blueprint.route("/dash", methods=["GET"])
+@login_required
+def user_dashboard():
+    return render_template('users/dash.html')
