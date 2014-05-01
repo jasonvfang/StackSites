@@ -37,6 +37,7 @@ def register_blueprints(app):
 
 def init_db(app):
     from flaskcities.users import models
+    from flaskcities.sites import models
     db.init_app(app)
     with app.app_context():
         db.create_all()
