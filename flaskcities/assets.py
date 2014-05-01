@@ -3,7 +3,8 @@ from flask.ext.assets import Bundle, Environment
 
 css = Bundle(
     "libs/font-awesome4/css/font-awesome.css",
-    "libs/bootstrap3/css/bootstrap.css",
+    "libs/bootstrap3/css/bootstrap.min.css",
+    "libs/bootstrap3/css/bootstrap-theme.min.css",
     "css/public/home.css",
     filters="cssmin",
     output="public/css/common.css"
