@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <div class='row'>
+    <div class='col-lg-6'>
+      <h3>Your Sites</h3>
+      <ul class='list-group'>
+      {% for site in user.sites %}
+        <li class='list-group-item'>
+        <a href="{{url_for('sites.view_site', username=user.username, site_name=site.name)}}" target="_blank"><strong style='font-size: 200%;'><i class="fa fa-external-link"></i> {{ site.name }}</strong></a> 
+        <div class='pull-right'>
+          <a class='btn btn-info' href="{{url_for('sites.manage_site', site_id=site.id)}}" role='button'>Manage Site</a>
+        </div>
+        </li>
+      {% endfor %}
+      </ul>
+        
+    </div>
+  </div>
+{% endblock %}
