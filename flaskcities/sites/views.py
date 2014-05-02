@@ -2,8 +2,7 @@
 import ipdb
 import requests as r
 from flask.ext.login import login_required
-from flask import Blueprint, render_template, render_template_string, url_for, redirect, send_file
-
+from flask import Blueprint, render_template, url_for, redirect, make_response
 from .forms import NewSiteForm
 from .utils import upload_to_s3, make_s3_path
 from flaskcities.utils import flash_errors
@@ -33,6 +32,6 @@ def new_site():
 def view_site(username, site_name):
     target = make_s3_path(username, site_name, 'index.html')
     print 'view_site', target
-    return render_template_string(r.get(target).text)
+    return make_response(r.get(target).text)
     
         
