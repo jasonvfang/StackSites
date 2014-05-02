@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class='row'>
+  <div class='col-lg-6'>
+    <h4>Manage Files for <strong>{{site.name}}</strong></h4>
+    <table class='table table-striped'>
+      <thead>
+        <tr>
+          <th>File Name</th>
+          <th>Size (bytes)</th>
+          <th>Manage</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for file in site.get_files() %}
+        <tr>
+          <td>{{file['name']}}</td>
+          <td>{{file['size']}}</td>
+          <td>Placeholder!</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
