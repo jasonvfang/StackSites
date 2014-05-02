@@ -1,4 +1,5 @@
 import boto
+import ntpath
 import mimetypes
 from urlparse import urljoin
 
@@ -13,6 +14,17 @@ def get_bucket():
     bucket_name = current_app.config['BUCKET_NAME']
     conn = boto.connect_s3(access_key_id, secret)
     return conn.get_bucket(bucket_name)
+
+
+def get_fname_from_path(path):
+    head, tail = ntpath.split(path)
+    return tail or ntpath.basename(head)
+
+
+def get_files_data(username, site_name):
+    bucket = get_bucket()
+    keys = bucket.list(prefix="{0}/{1}".format(username, site_name))
+    return [{'name': get_fname_from_path(key.name), 'size': key.size} for key in keys]
     
     
 def upload_index_for_new_site(username, site_name):

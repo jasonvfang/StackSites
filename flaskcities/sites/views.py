@@ -3,8 +3,10 @@ import ipdb
 import requests as r
 from flask.ext.login import login_required
 from flask import Blueprint, render_template, url_for, redirect, make_response
+
 from .forms import NewSiteForm
 from .utils import upload_to_s3, make_s3_path
+from .models import Site
 from flaskcities.utils import flash_errors
 
 blueprint = Blueprint('sites', __name__, url_prefix='/sites', 
@@ -33,5 +35,15 @@ def view_site(username, site_name):
     target = make_s3_path(username, site_name, 'index.html')
     print 'view_site', target
     return make_response(r.get(target).text)
+
+
+@blueprint.route('/manage/<int:site_id>', methods=['GET'])
+def manage_site(site_id):
+    site = Site.get_by_id(site_id)
+    if site is None:
+        flash('That site does not exist', 'error')
+        return redirect(url_for('public.user_dashboard'))
+    return render_template('sites/manage.html', site=site)
+
     
         

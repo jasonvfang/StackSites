@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from flaskcities.database import db, CRUDMixin
-from .utils import upload_index_for_new_site, make_s3_path
+from .utils import upload_index_for_new_site, make_s3_path, get_files_data
 
 
 class Site(CRUDMixin, db.Model):
@@ -22,6 +22,9 @@ class Site(CRUDMixin, db.Model):
     def update_time(self):
         self.updated_at = datetime.utcnow()
         self.save()
+
+    def get_files(self):
+        return get_files_data(self.user.username, self.name)
 
     def __repr__(self):
         username = self.user or ""
