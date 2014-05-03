@@ -31,7 +31,7 @@ class User(UserMixin, CRUDMixin, db.Model):
         self.active = False
         self.roles = frozenset()
         self.set_password(password)
-        self.sites.append(Site('home', username))
+        self.sites.append(Site('home', self))
 
     def set_password(self, password):
         self.pwdhash = bcrypt.generate_password_hash(password)
