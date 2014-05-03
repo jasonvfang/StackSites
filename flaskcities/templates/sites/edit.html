@@ -17,7 +17,7 @@
     <p class='text-warning hidden' id='unsavedText'>Unsaved changes <i class="fa fa-exclamation-triangle"></i></p>
     <div class='btn-group-vertical'>
       <button class='btn btn-lg btn-success' id='saveButton'><i class="fa fa-floppy-o"></i> Save</button>
-    <a class='btn btn-default' href="{{ url_for('sites.view_file', site_id=site.id, filename=filename) }}" target='_blank'>View {{ filename }}</a>
+    <a class='btn btn-default' href="{{ url_for('sites.view_file', username=site.user.username, site_id=site.id, filename=filename) }}" target='_blank'>View {{ filename }}</a>
     <a class='btn btn-primary' href="{{ url_for('sites.view_site', username=site.user.username, site_name=site.name) }}" target='_blank'>View Site</a>
     </div>
   </div>
