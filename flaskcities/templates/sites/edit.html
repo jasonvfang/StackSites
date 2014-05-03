@@ -14,10 +14,11 @@
   </div>
   <div class='col-lg-2'>
     <p class='text-info hidden' id='loadingText'>Saving changes <i class="fa fa-refresh fa-spin"></i></p>
+    <p class='text-warning hidden' id='unsavedText'>Unsaved changes <i class="fa fa-exclamation-triangle"></i></p>
     <div class='btn-group-vertical'>
-      <button class='btn btn-lg btn-primary' id='saveButton'>Save</button>
+      <button class='btn btn-lg btn-success' id='saveButton'><i class="fa fa-floppy-o"></i> Save</button>
     <a class='btn btn-default' href="{{ url_for('sites.view_file', site_id=site.id, filename=filename) }}" target='_blank'>View {{ filename }}</a>
-    <a class='btn btn-success' href="{{ url_for('sites.view_site', username=site.user.username, site_name=site.name) }}" target='_blank'>View Site</a>
+    <a class='btn btn-primary' href="{{ url_for('sites.view_site', username=site.user.username, site_name=site.name) }}" target='_blank'>View Site</a>
     </div>
   </div>
 </div>
@@ -36,6 +37,10 @@
   editor.setTheme("ace/theme/monokai");
   editor.getSession().setMode("ace/mode/html");
 
+  editor.getSession().on('change', function(e) {
+    $('#unsavedText').removeClass('hidden');
+  });
+
   $(document).ready(function() {
     $("#saveButton").click(function() {
       $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};  
@@ -46,6 +51,7 @@
         'site_name': "{{ site.name }}"
       };
       $('#loadingText').removeClass('hidden');
+      $('#unsavedText').addClass('hidden');
       $.getJSON(target, jsondata, function(data) {
         console.log('server says ' + data['status']);
         $('#loadingText').addClass('hidden');
