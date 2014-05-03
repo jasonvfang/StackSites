@@ -78,3 +78,10 @@ def save_file(site_id):
         return jsonify({'status': 'success'})
     except Exception, e:
         return jsonify({'status': 'error', 'error': str(e)})
+
+
+@blueprint.route('/view/<int:site_id>/<filename>')
+def view_file(site_id, filename):
+    site = Site.get_by_id(site_id)
+    s3_path = make_s3_path(current_user.username, site.name, filename)
+    return make_response(r.get(s3_path).text)
