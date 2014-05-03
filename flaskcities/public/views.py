@@ -5,6 +5,7 @@ from flask.ext.login import login_user, login_required, logout_user, current_use
 
 from flaskcities.users.forms import LoginForm
 from flaskcities.utils import is_auth
+from flaskcities.sites.forms import NewSiteForm
 
 blueprint = Blueprint('public', __name__, static_folder="../static")
 
@@ -20,4 +21,5 @@ def home():
 @blueprint.route("/dash", methods=["GET"])
 @login_required
 def user_dashboard():
-    return render_template('public/dash.html', user=current_user)
+    form = NewSiteForm()
+    return render_template('public/dash.html', user=current_user, form=form)

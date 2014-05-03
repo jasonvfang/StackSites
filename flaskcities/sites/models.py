@@ -13,11 +13,12 @@ class Site(CRUDMixin, db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, name, username):
+    def __init__(self, name, user):
         self.name = name
         self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
-        upload_index_for_new_site(username, name)
+        self.user = user
+        upload_index_for_new_site(user.username, name)
 
     def update_time(self):
         self.updated_at = datetime.utcnow()

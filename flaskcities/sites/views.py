@@ -21,15 +21,12 @@ def new_site():
     form = NewSiteForm()
     if form.validate_on_submit():
         name = form.name.data
-        index = blueprint.open_resource('../templates/new_site.html')
-        if index is not None:
-            upload_to_s3(index, name, 'index.html')
-        else:
-            raise Exception, "Could not upload index resource to S3"
-        return redirect(url_for('public.home'))
+        site = Site(name, current_user)
+        site.save()
+        return redirect(url_for('public.user_dashboard'))
     else:
         flash_errors(form)
-        return redirect(url_for('public.home'))
+        return redirect(url_for('public.user_dashboard'))
         
         
 @blueprint.route('/<username>/<site_name>')

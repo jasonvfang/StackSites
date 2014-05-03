@@ -2,19 +2,42 @@
 
 {% block content %}
   <div class='row'>
-    <div class='col-lg-6'>
-      <h3>Your Sites</h3>
-      <ul class='list-group'>
-      {% for site in user.sites %}
-        <li class='list-group-item'>
-        <a href="{{url_for('sites.view_site', username=user.username, site_name=site.name)}}" target="_blank"><strong style='font-size: 200%;'><i class="fa fa-external-link"></i> {{ site.name }}</strong></a> 
-        <div class='pull-right'>
-          <a class='btn btn-info' href="{{url_for('sites.manage_site', site_id=site.id)}}" role='button'>Manage Site</a>
+    <div class='col-lg-4'>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h2 class="panel-title">Your Sites</h2>
         </div>
-        </li>
-      {% endfor %}
-      </ul>
-        
+        <div class="panel-body">
+          <ul class='list-group'>
+          {% for site in user.sites %}
+            <li class='list-group-item'>
+            <a href="{{url_for('sites.view_site', username=user.username, site_name=site.name)}}" target="_blank"><strong style='font-size: 200%;'><i class="fa fa-external-link"></i> {{ site.name }}</strong></a> 
+            <div class='pull-right'>
+              <a class='btn btn-info' href="{{url_for('sites.manage_site', site_id=site.id)}}" role='button'>Manage Site</a>
+            </div>
+            </li>
+          {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class='col-lg-8'>
+      <h3>Create a New Site</h3>
+      <form role='form' method='POST' action="{{ url_for('sites.new_site') }}">
+        {{form.hidden_tag()}}
+        <div class='form-group'>
+          <label>Site Name</label>
+          {% if form.name.errors %}
+          {% for error in form.name.errors %}
+          <p class='text-danger'>{{error}}</p>
+          {% endfor %}
+          {% endif %}
+          {{form.name(type='text', placeholder='Site name',
+                      class='form-control', style='width: 25%')}}
+        </div>
+        <button type='submit' class='btn btn-primary'>Create Site</button>
+    </form>
     </div>
   </div>
 {% endblock %}
