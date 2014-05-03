@@ -56,7 +56,6 @@ def manage_site(site_id):
 def upload(site_id):
     site = Site.get_by_id(site_id)
     files = request.files.getlist("files[]")
-    ipdb.set_trace()
     if files[0].content_type == 'application/octet-stream':
         flash('Please select some files to upload.', 'danger')
         return redirect(url_for('sites.manage_site', site_id=site_id))
