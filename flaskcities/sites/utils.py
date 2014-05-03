@@ -33,7 +33,7 @@ def upload_index_for_new_site(username, site_name):
     upload_to_s3(index, username, site_name, 'index.html')
     
     
-def upload_to_s3(file_obj, username, site_name, filename=None):
+def upload_to_s3(file_obj, username, site_name, filename=None, set_contents_from_str=False):
     """Uploads the file_obj to an Amazon S3 bucket under filename if specified."""
     if not filename:
         filename = werkzeug.secure_filename(file_obj.filename)
@@ -42,8 +42,11 @@ def upload_to_s3(file_obj, username, site_name, filename=None):
     bucket = get_bucket()
     key = bucket.new_key(filename)
     key.set_metadata('Content-Type', mimetype)
-    file_obj.seek(0)
-    key.set_contents_from_file(file_obj)
+    if not set_contents_from_str:
+        file_obj.seek(0)
+        key.set_contents_from_file(file_obj)
+    else:
+        key.set_contents_from_string(file_obj)
     key.set_acl('public-read')
     
     

@@ -15,7 +15,7 @@
       <tbody>
         {% for file in site.get_files() %}
         <tr>
-          <td>{{file['name']}}</td>
+          <td><a href="{{ url_for('sites.edit_file', site_id=site.id, filename=file['name']) }}">{{file['name']}}</a></td>
           <td>{{file['size']}}</td>
           <td>Placeholder!</td>
         </tr>

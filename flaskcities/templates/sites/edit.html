@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class='row'>
+  <div class='col-lg-10'>
+    <div class='panel panel-default'>
+      <div class="panel-heading">
+         <h3 class="panel-title">Editing <strong>{{ filename }}</strong></h3>
+      </div>
+      <div class="panel-body">
+        <div id="editor" style="height: 40em;"></div>
+      </div>
+    </div>
+  </div>
+  <div class='col-lg-2'>
+    <button class='btn btn-lg btn-primary' id='saveButton'>Save</button>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"></script>
+<script type="text/javascript">
+  var editor = ace.edit("editor");
+  $.ajax({
+    url: "{{s3_path}}",
+    success: function(result) {
+      editor.setValue(result);
+    }
+  });
+  editor.setTheme("ace/theme/monokai");
+  editor.getSession().setMode("ace/mode/html");
+
+  $(document).ready(function() {
+    $("#saveButton").click(function() {
+      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};  
+      var target = $SCRIPT_ROOT + "{{ url_for('sites.save_file', site_id=site.id) }}";
+      var jsondata = {
+        'data': editor.getValue(),
+        'filename': "{{ filename }}",
+        'site_name': "{{ site.name }}"
+      };
+
+      $.getJSON(target, jsondata, function(data) {
+        console.log('server says ' + data['status']);
+      })
+    });
+  });
+  
+</script>
+{% endblock %}

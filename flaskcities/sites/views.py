@@ -3,11 +3,11 @@ import ipdb
 import requests as r
 from werkzeug import secure_filename
 from flask.ext.login import login_required, current_user
-from flask import Blueprint, render_template, url_for, redirect, make_response, request
+from flask import Blueprint, render_template, url_for, redirect, make_response, request, jsonify
 
 from .forms import NewSiteForm
-from .utils import upload_to_s3, make_s3_path
 from .models import Site
+from .utils import upload_to_s3, make_s3_path
 from flaskcities.utils import flash_errors
 
 blueprint = Blueprint('sites', __name__, url_prefix='/sites', 
@@ -58,3 +58,23 @@ def upload(site_id):
         upload_to_s3(file, current_user.username, site.name, filename)
     return redirect(url_for('sites.manage_site', site_id=site_id))
 
+
+@blueprint.route('/edit/<int:site_id>/<filename>')
+def edit_file(site_id, filename):
+    site = Site.get_by_id(site_id)
+    s3_path = make_s3_path(current_user.username, site.name, filename)
+    return render_template('sites/edit.html', s3_path=s3_path, filename=filename,
+                            site=site)
+
+
+@blueprint.route('/save/<int:site_id>')
+def save_file(site_id):
+    filename = request.args.get('filename')
+    file_data = request.args.get('data')
+    site_name = request.args.get('site_name')
+    try:
+        upload_to_s3(file_data, current_user.username,
+                     site_name, filename, set_contents_from_str=True)
+        return jsonify({'status': 'success'})
+    except Exception, e:
+        return jsonify({'status': 'error', 'error': str(e)})
