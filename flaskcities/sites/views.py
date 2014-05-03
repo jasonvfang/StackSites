@@ -4,7 +4,7 @@ import requests as r
 import mimetypes
 from werkzeug import secure_filename
 from flask.ext.login import login_required, current_user
-from flask import Response, Blueprint, render_template, url_for, redirect, make_response, request, jsonify
+from flask import Response, Blueprint, render_template, url_for, redirect, make_response, request, jsonify, flash
 
 from .forms import NewSiteForm
 from .models import Site
@@ -47,7 +47,7 @@ def view_site(username, site_name):
 def manage_site(site_id):
     site = Site.get_by_id(site_id)
     if site is None:
-        flash('That site does not exist', 'error')
+        flash('That site does not exist', 'danger')
         return redirect(url_for('public.user_dashboard'))
     return render_template('sites/manage.html', site=site)
 
@@ -56,9 +56,11 @@ def manage_site(site_id):
 def upload(site_id):
     site = Site.get_by_id(site_id)
     files = request.files.getlist("files[]")
-    print 'files', files
+    if files[0].content_length == 0:
+        flash('Please select some files to upload.', 'danger')
+        return redirect(url_for('sites.manage_site', site_id=site_id))
+
     for file in files:
-        print 'upload type', type(file)
         filename = secure_filename(file.filename)
         upload_to_s3(file, current_user.username, site.name, filename)
     return redirect(url_for('sites.manage_site', site_id=site_id))
