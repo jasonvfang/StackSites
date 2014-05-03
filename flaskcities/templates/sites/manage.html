@@ -23,5 +23,42 @@
       </tbody>
     </table>
   </div>
+  <div class='col-lg-6'>
+    <h3>Upload Files</h3>
+    <form role='form' id='uploadForm' method='post' action="{{ url_for('sites.upload', site_id=site.id) }}" enctype='multipart/form-data'>
+      <div class='form-group'>
+        <label>Upload only web-related files.</label>
+        <input type='file' name="files[]" multiple/>
+      </div>
+      <button type="submit" class="btn btn-primary"><i class="fa fa-cloud-upload"></i> Upload Files</button>
+    </form>
+  </div>
 </div>
+
+<div class="modal fade" id='uploadModal'>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title"><em>Beep boop...</em></h4>
+      </div>
+      <div class="modal-body">
+        <h3><i class="fa fa-cog fa-spin"></i> Uploading your files!</h3>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{% endblock %}
+
+{% block extrajs %}
+<!-- <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/dropzone/3.8.4/dropzone.min.js"></script> -->
+<script type="text/javascript">
+  $("#uploadForm").submit(function(e) {
+    $("#uploadModal").modal();
+  });
+</script>
 {% endblock %}

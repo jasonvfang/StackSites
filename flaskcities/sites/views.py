@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import ipdb
 import requests as r
-from flask.ext.login import login_required
-from flask import Blueprint, render_template, url_for, redirect, make_response
+from werkzeug import secure_filename
+from flask.ext.login import login_required, current_user
+from flask import Blueprint, render_template, url_for, redirect, make_response, request
 
 from .forms import NewSiteForm
 from .utils import upload_to_s3, make_s3_path
@@ -46,4 +47,14 @@ def manage_site(site_id):
     return render_template('sites/manage.html', site=site)
 
     
-        
+@blueprint.route('/upload/<int:site_id>', methods=['POST'])
+def upload(site_id):
+    site = Site.get_by_id(site_id)
+    files = request.files.getlist("files[]")
+    print 'files', files
+    for file in files:
+        print 'upload type', type(file)
+        filename = secure_filename(file.filename)
+        upload_to_s3(file, current_user.username, site.name, filename)
+    return redirect(url_for('sites.manage_site', site_id=site_id))
+

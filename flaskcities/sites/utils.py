@@ -1,6 +1,7 @@
 import boto
 import ntpath
 import mimetypes
+import werkzeug
 from urlparse import urljoin
 
 from flask import current_app
