@@ -5,6 +5,8 @@ from wtforms.validators import DataRequired, Email, EqualTo, Length
 
 from flaskcities.users.models import User
 
+EXTRA_WHITESPACE = "The username you entered had an extra space (which was removed). If you don't know what that means, then don't worry."
+
 
 class RegisterForm(Form):
     username = TextField('Username', validators=[DataRequired("You must enter a username."), 
@@ -16,6 +18,8 @@ class RegisterForm(Form):
     confirm = PasswordField('Verify password',
                             validators=[DataRequired("Please re-type the password entered above."), EqualTo('password', message='Passwords must match.')])
     
+    notify = []
+
     def __init__(self, *args, **kwargs):
         super(RegisterForm, self).__init__(*args, **kwargs)
         self.user = None
@@ -29,6 +33,11 @@ class RegisterForm(Form):
         if user:
             self.email.errors.append("That email address has already been registered.")
             return False
+
+        # if the username has an extra space, notify and remove it, but don't cause a fuss
+        if ' ' in self.username.data:
+            self.notify.append((EXTRA_WHITESPACE, 'info'))
+            self.username.data = self.username.data.strip()
 
         user = User.query.filter_by(username=self.username.data).first()
         if user:
@@ -59,6 +68,8 @@ class LoginForm(Form):
         if not initial_validation:
             return False
 
+        # some mobile keyboards have a tendency to add whitespace
+        self.creds.data = self.creds.data.strip()
         self.user = User.query.filter_by(email=self.creds.data).first()
         if not self.user:
             self.user = User.query.filter_by(username=self.creds.data).first()

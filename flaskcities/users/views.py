@@ -45,6 +45,9 @@ def register():
                                password=form.password.data)
         send_confirmation_email(new_user)
         flash("Your account has been created. Please check your inbox for an activation email.", 'warning')
+        if form.notify:
+            for notification in form.notify:
+                flash(notification[0], notification[1])
         return redirect(url_for('public.home'))
     return render_template('users/register.html', form=form)
 
