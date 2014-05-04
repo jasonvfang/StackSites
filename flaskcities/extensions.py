@@ -19,3 +19,6 @@ migrate = Migrate()
 
 from flask.ext.mail import Mail
 mail = Mail()
+
+
+from flask_sslify import SSLify
