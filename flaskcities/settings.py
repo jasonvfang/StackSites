@@ -15,12 +15,12 @@ class Config(object):
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
     BUCKET_NAME = 'flaskcities'
     BCRYPT_LEVEL = 13
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
 
 
 class ProdConfig(Config):
     ENV = 'prod'
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     ASSETS_DEBUG = False
 
 
@@ -29,5 +29,4 @@ class DevConfig(Config):
     DEBUG = True
     DB_NAME = 'dev.db'
     DB_PATH = os.path.join(Config.PROJECT_ROOT, DB_NAME)
-    SQLALCHEMY_DATABASE_URI = "sqlite:///{0}".format(DB_PATH)
     ASSETS_DEBUG = True
