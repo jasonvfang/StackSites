@@ -18,7 +18,7 @@
     <div class="collapse navbar-collapse">
 
       <ul class="nav navbar-nav">
-        <li><a href="#">About</a></li>
+        <li><a href="#">Placeholder</a></li>
       </ul>
 
       {% if current_user and current_user.is_authenticated() %}
@@ -30,7 +30,7 @@
         <a role="button" class="btn btn-sm btn-primary navbar-btn navbar-left" href="{{ url_for('users.register') }}">Sign Up</a>
 
         <form id="loginForm" class="navbar-form form-inline navbar-right" method="POST" action="{{ url_for('users.login') }}">
-          {{ loginForm.hidden_tag() }}
+          {{ loginForm.csrf_token }}
           <div class='form-group'>
             {{ loginForm.creds(type='text', placeholder='Username or email', class='form-control') }}
             {{ loginForm.password(type='password', placeholder='Password', class='form-control') }}
