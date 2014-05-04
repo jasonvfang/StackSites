@@ -22,4 +22,4 @@ def home():
 @login_required
 def user_dashboard():
     form = NewSiteForm()
-    return render_template('public/dash.html', user=current_user, form=form)
+    return render_template('public/dash.html', form=form)

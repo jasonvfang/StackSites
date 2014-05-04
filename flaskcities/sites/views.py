@@ -49,7 +49,7 @@ def manage_site(site_id):
     if site is None:
         flash('That site does not exist', 'danger')
         return redirect(url_for('public.user_dashboard'))
-    return render_template('sites/manage.html', site=site, user=current_user)
+    return render_template('sites/manage.html', site=site)
 
     
 @blueprint.route('/upload/<int:site_id>', methods=['POST'])
@@ -71,7 +71,7 @@ def edit_file(site_id, filename):
     site = Site.get_by_id(site_id)
     s3_path = make_s3_path(current_user.username, site.name, filename)
     return render_template('sites/edit.html', s3_path=s3_path, filename=filename,
-                            site=site, user=current_user)
+                            site=site)
 
 
 @blueprint.route('/save/<int:site_id>')
