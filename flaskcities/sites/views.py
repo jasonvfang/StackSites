@@ -4,7 +4,7 @@ import requests as r
 import mimetypes
 from werkzeug import secure_filename
 from flask.ext.login import login_required, current_user
-from flask import Response, Blueprint, render_template, url_for, redirect, make_response, request, jsonify, flash
+from flask import Response, Blueprint, render_template, url_for, redirect, make_response, request, jsonify, flash, current_app
 
 from .forms import NewSiteForm
 from .models import Site
@@ -38,7 +38,10 @@ def view_site(username, site_name):
         ref_site_name = ref[-1]
         user = User.query.filter_by(username=username).first()
         site = [site for site in user.sites if site.name == ref_site_name][0]
-        return redirect(url_for('sites.view_file', username=username, site_id=site.id, filename=site_name))
+        if not current_app.debug:
+            return redirect(url_for('sites.view_file', username=username, site_id=site.id, filename=site_name, _scheme='https', _external=True))
+        else:
+            return redirect(url_for('sites.view_file', username=username, site_id=site.id, filename=site_name))
     target = make_s3_path(username, site_name, 'index.html')
     return make_response(r.get(target).text)
 
