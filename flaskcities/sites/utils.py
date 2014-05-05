@@ -4,7 +4,8 @@ import mimetypes
 import werkzeug
 from urlparse import urljoin
 
-from flask import current_app
+from flask import current_app, abort
+from flask.ext.login import current_user
 
 
 def get_bucket():
@@ -55,3 +56,8 @@ def make_s3_path(username, site_name, filename):
     protocol = 'http' if current_app.config['DEBUG'] else 'https'
     s3_path = "{0}://s3.amazonaws.com/{1}/{2}/{3}/".format(protocol, current_app.config['BUCKET_NAME'], username, site_name)
     return urljoin(s3_path, filename)
+
+
+def owns_site(site):
+    if current_user != site.user:
+        abort(403)

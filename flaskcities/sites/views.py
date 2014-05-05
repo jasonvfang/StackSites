@@ -8,7 +8,7 @@ from flask import Response, Blueprint, render_template, url_for, redirect, make_
 
 from .forms import NewSiteForm
 from .models import Site
-from .utils import upload_to_s3, make_s3_path
+from .utils import upload_to_s3, make_s3_path, owns_site
 from flaskcities.utils import flash_errors
 
 blueprint = Blueprint('sites', __name__, url_prefix='/sites', 
@@ -47,8 +47,10 @@ def view_site(username, site_name):
 
 
 @blueprint.route('/manage/<int:site_id>', methods=['GET'])
+@login_required
 def manage_site(site_id):
     site = Site.get_by_id(site_id)
+    owns_site(site)
     if site is None:
         flash('That site does not exist', 'danger')
         return redirect(url_for('public.user_dashboard'))
@@ -58,6 +60,7 @@ def manage_site(site_id):
 @blueprint.route('/upload/<int:site_id>', methods=['POST'])
 def upload(site_id):
     site = Site.get_by_id(site_id)
+    owns_site(site)
     files = request.files.getlist("files[]")
     if files[0].content_type == 'application/octet-stream':
         flash('Please select some files to upload.', 'danger')
@@ -70,8 +73,10 @@ def upload(site_id):
 
 
 @blueprint.route('/edit/<int:site_id>/<filename>')
+@login_required
 def edit_file(site_id, filename):
     site = Site.get_by_id(site_id)
+    owns_site(site)
     s3_path = make_s3_path(current_user.username, site.name, filename)
     return render_template('sites/edit.html', s3_path=s3_path, filename=filename,
                             site=site)
@@ -79,6 +84,8 @@ def edit_file(site_id, filename):
 
 @blueprint.route('/save/<int:site_id>')
 def save_file(site_id):
+    site = Site.get_by_id(site_id)
+    owns_site(site)
     filename = request.args.get('filename')
     file_data = request.args.get('data')
     site_name = request.args.get('site_name')
