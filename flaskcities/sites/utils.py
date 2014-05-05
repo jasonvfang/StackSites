@@ -52,5 +52,6 @@ def upload_to_s3(file_obj, username, site_name, filename=None, set_contents_from
     
 def make_s3_path(username, site_name, filename):
     """Creates a string combining the standard S3 URL and a filename to make a valid link."""
-    s3_path = "http://s3.amazonaws.com/{0}/{1}/{2}/".format(current_app.config['BUCKET_NAME'], username, site_name)
+    protocol = 'http' if current_app.config['DEBUG'] else 'https'
+    s3_path = "{0}://s3.amazonaws.com/{1}/{2}/{3}/".format(protocol, current_app.config['BUCKET_NAME'], username, site_name)
     return urljoin(s3_path, filename)
