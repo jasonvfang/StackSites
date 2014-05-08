@@ -58,6 +58,12 @@ def make_s3_path(username, site_name, filename):
     return urljoin(s3_path, filename)
 
 
+def delete_s3_file(username, site_name, filename):
+    bucket = get_bucket()
+    key = bucket.lookup('{0}/{1}/{2}'.format(username, site_name, filename))
+    key.delete()
+
+
 def owns_site(site):
     if current_user != site.user:
         abort(403)

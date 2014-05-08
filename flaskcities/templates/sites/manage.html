@@ -17,7 +17,7 @@
         <tr>
           <td><a href="{{ url_for('sites.edit_file', site_id=site.id, filename=file['name']) }}">{{file['name']}}</a></td>
           <td>{{file['size']}}</td>
-          <td>Placeholder!</td>
+          <td><button class='btn btn-danger fileDelete' file-name={{file['name']}} type="button" delete-target="{{ url_for('sites.delete_file', site_id=site.id, filename=file['name']) }}">Delete</button></td>
         </tr>
         {% endfor %}
       </tbody>
@@ -34,6 +34,24 @@
     </form>
   </div>
 </div>
+
+<div class="modal fade" id='deleteModal'>
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title"><em>Confirm Deletion</em></h4>
+      </div>
+      <div class="modal-body">
+        <h3>Are you sure you want to delete <span id='modalFilename'>this file</span>?</h3>
+        <a class="btn btn-danger" id='modalDeleteButton' href="">Delete File</a>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <div class="modal fade" id='uploadModal'>
   <div class="modal-dialog">
@@ -58,6 +76,13 @@
 <script type="text/javascript">
   $("#uploadForm").submit(function(e) {
     $("#uploadModal").modal();
+  });
+  $(".fileDelete").click(function(event) {
+    var deleteURL = $(this).attr('delete-target');
+    var filename = $(this).attr('file-name');
+    $("#modalFilename").text(filename);
+    $("#modalDeleteButton").attr('href', deleteURL);
+    $("#deleteModal").modal();
   });
 </script>
 {% endblock %}

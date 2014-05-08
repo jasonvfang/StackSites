@@ -8,7 +8,7 @@ from flask import Response, Blueprint, render_template, url_for, redirect, make_
 
 from .forms import NewSiteForm
 from .models import Site
-from .utils import upload_to_s3, make_s3_path, owns_site
+from .utils import upload_to_s3, make_s3_path, owns_site, delete_s3_file
 from flaskcities.utils import flash_errors
 
 blueprint = Blueprint('sites', __name__, url_prefix='/sites', 
@@ -103,3 +103,11 @@ def view_file(username, site_id, filename):
     s3_path = make_s3_path(username, site.name, filename)
     mimetype = mimetypes.guess_type(filename)[0]
     return Response(response=r.get(s3_path).text, mimetype=mimetype)
+
+
+@blueprint.route('/delete/<int:site_id>/<filename>')
+def delete_file(site_id, filename):
+    site = Site.get_by_id(site_id)
+    owns_site(site)
+    delete_s3_file(site.user.username, site.name, filename)
+    return redirect(url_for('sites.manage_site', site_id=site_id))
