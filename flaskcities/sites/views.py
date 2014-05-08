@@ -11,6 +11,8 @@ from .models import Site
 from .utils import upload_to_s3, make_s3_path, owns_site, delete_s3_file
 from flaskcities.utils import flash_errors
 
+IMAGE_EXTS = ['jpg', 'png', 'svg', 'gif', 'bmp', 'webp']
+
 blueprint = Blueprint('sites', __name__, url_prefix='/sites', 
                       template_folder='../templates')
 
@@ -56,7 +58,7 @@ def manage_site(site_id, form=None):
         return redirect(url_for('public.user_dashboard'))
     if form is None:
         form = UploadFilesForm()
-    return render_template('sites/manage.html', site=site, form=form)
+    return render_template('sites/manage.html', site=site, form=form, image_exts=IMAGE_EXTS)
 
     
 @blueprint.route('/upload/<int:site_id>', methods=['POST'])
@@ -65,7 +67,6 @@ def upload(site_id):
     owns_site(site)
     form = UploadFilesForm()
     if form.validate_on_submit():
-        ipdb.set_trace()
         files = request.files.getlist('files')
         for file in files:
             filename = secure_filename(file.filename)

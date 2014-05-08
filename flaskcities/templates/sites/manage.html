@@ -15,7 +15,11 @@
       <tbody>
         {% for file in site.get_files() %}
         <tr>
+          {% if file['ext'] in image_exts %}
+          <td>{{file['name']}}</td>
+          {% else %}
           <td><a href="{{ url_for('sites.edit_file', site_id=site.id, filename=file['name']) }}">{{file['name']}}</a></td>
+          {% endif %}
           <td>{{ file['size']|filesizeformat }}</td>
           <td><button class='btn btn-danger fileDelete' file-name={{file['name']}} type="button" delete-target="{{ url_for('sites.delete_file', site_id=site.id, filename=file['name']) }}">Delete</button></td>
         </tr>

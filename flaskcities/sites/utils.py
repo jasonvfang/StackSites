@@ -23,10 +23,14 @@ def get_fname_from_path(path):
     return tail or ntpath.basename(head)
 
 
+def get_file_ext(filename):
+    return filename.split('.')[-1]
+
+
 def get_files_data(username, site_name):
     bucket = get_bucket()
     keys = bucket.list(prefix="{0}/{1}".format(username, site_name))
-    return [{'name': get_fname_from_path(key.name), 'size': key.size} for key in keys]
+    return [{'name': get_fname_from_path(key.name), 'size': key.size, 'ext': get_file_ext(get_fname_from_path(key.name))} for key in keys]
     
     
 def upload_index_for_new_site(username, site_name):
