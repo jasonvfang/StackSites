@@ -28,6 +28,7 @@
 
 {% block extrajs %}
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='libs/ace/ext-modelist.js') }}"></script>
 <script type="text/javascript">
   var editor = ace.edit("editor");
   $.ajax({
@@ -37,7 +38,9 @@
     }
   });
   editor.setTheme("ace/theme/monokai");
-  editor.getSession().setMode("ace/mode/html");
+  var modelist = ace.require('ace/ext/modelist');
+  var mode = modelist.getModeForPath("{{ s3_path }}").mode;
+  editor.getSession().setMode(mode);
 
   editor.getSession().on('change', function(e) {
     $('#unsavedText').removeClass('hidden');
