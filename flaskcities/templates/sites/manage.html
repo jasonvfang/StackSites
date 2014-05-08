@@ -26,9 +26,15 @@
   <div class='col-lg-6'>
     <h3>Upload Files</h3>
     <form role='form' id='uploadForm' method='post' action="{{ url_for('sites.upload', site_id=site.id) }}" enctype='multipart/form-data'>
+      {{ form.hidden_tag() }}
       <div class='form-group'>
         <label>Upload only web-related files.</label>
-        <input type='file' name="files[]" multiple/>
+        {% if form.files.errors %}
+        {% for error in form.files.errors %}
+        <p class='text-danger'>{{error}}</p>
+        {% endfor %}
+        {% endif %}
+        {{ form.files(multiple=True) }}
       </div>
       <button type="submit" class="btn btn-primary"><i class="fa fa-cloud-upload"></i> Upload Files</button>
     </form>

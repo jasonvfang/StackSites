@@ -6,7 +6,7 @@ from werkzeug import secure_filename
 from flask.ext.login import login_required, current_user
 from flask import Response, Blueprint, render_template, url_for, redirect, make_response, request, jsonify, flash, current_app
 
-from .forms import NewSiteForm
+from .forms import NewSiteForm, UploadFilesForm
 from .models import Site
 from .utils import upload_to_s3, make_s3_path, owns_site, delete_s3_file
 from flaskcities.utils import flash_errors
@@ -25,9 +25,9 @@ def new_site():
         site.save()
         return redirect(url_for('public.user_dashboard'))
     else:
-        flash_errors(form)
-        return redirect(url_for('public.user_dashboard'))
-        
+        from flaskcities.public.views import user_dashboard
+        return user_dashboard(newSiteForm=form)
+
         
 @blueprint.route('/<username>/<site_name>')
 def view_site(username, site_name):
@@ -48,28 +48,31 @@ def view_site(username, site_name):
 
 @blueprint.route('/manage/<int:site_id>', methods=['GET'])
 @login_required
-def manage_site(site_id):
+def manage_site(site_id, form=None):
     site = Site.get_by_id(site_id)
     owns_site(site)
     if site is None:
         flash('That site does not exist', 'danger')
         return redirect(url_for('public.user_dashboard'))
-    return render_template('sites/manage.html', site=site)
+    if form is None:
+        form = UploadFilesForm()
+    return render_template('sites/manage.html', site=site, form=form)
 
     
 @blueprint.route('/upload/<int:site_id>', methods=['POST'])
 def upload(site_id):
     site = Site.get_by_id(site_id)
     owns_site(site)
-    files = request.files.getlist("files[]")
-    if files[0].content_type == 'application/octet-stream':
-        flash('Please select some files to upload.', 'danger')
+    form = UploadFilesForm()
+    if form.validate_on_submit():
+        ipdb.set_trace()
+        files = request.files.getlist('files')
+        for file in files:
+            filename = secure_filename(file.filename)
+            upload_to_s3(file, current_user.username, site.name, filename)
         return redirect(url_for('sites.manage_site', site_id=site_id))
-
-    for file in files:
-        filename = secure_filename(file.filename)
-        upload_to_s3(file, current_user.username, site.name, filename)
-    return redirect(url_for('sites.manage_site', site_id=site_id))
+    else:
+        return manage_site(site_id, form)
 
 
 @blueprint.route('/edit/<int:site_id>/<filename>')
