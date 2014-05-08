@@ -20,6 +20,7 @@ def home():
 
 @blueprint.route("/dash", methods=["GET"])
 @login_required
-def user_dashboard():
-    form = NewSiteForm()
-    return render_template('public/dash.html', form=form)
+def user_dashboard(newSiteForm=None):
+	if newSiteForm is None:
+		newSiteForm = NewSiteForm()
+	return render_template('public/dash.html', form=newSiteForm)
