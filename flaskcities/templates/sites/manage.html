@@ -8,7 +8,7 @@
       <thead>
         <tr>
           <th>File Name</th>
-          <th>Size (bytes)</th>
+          <th>Size</th>
           <th>Manage</th>
         </tr>
       </thead>
@@ -16,7 +16,7 @@
         {% for file in site.get_files() %}
         <tr>
           <td><a href="{{ url_for('sites.edit_file', site_id=site.id, filename=file['name']) }}">{{file['name']}}</a></td>
-          <td>{{file['size']}}</td>
+          <td>{{ file['size']|filesizeformat }}</td>
           <td><button class='btn btn-danger fileDelete' file-name={{file['name']}} type="button" delete-target="{{ url_for('sites.delete_file', site_id=site.id, filename=file['name']) }}">Delete</button></td>
         </tr>
         {% endfor %}
