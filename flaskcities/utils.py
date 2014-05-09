@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import flash
+from flask import flash, request
 from flask.ext.login import current_user
 
 
@@ -12,3 +12,7 @@ def flash_errors(form, category="warning"):
 
 def is_auth():
     return current_user and current_user.is_authenticated()
+
+
+def is_post_and_valid(form):
+	return request.method == 'POST' and form.validate_on_submit()

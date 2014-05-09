@@ -4,7 +4,7 @@ from flask import (Blueprint, request, render_template, flash,
 from flask.ext.login import login_user, login_required, logout_user, current_user
 
 from flaskcities.users.forms import LoginForm
-from flaskcities.utils import is_auth
+from flaskcities.utils import is_auth, is_post_and_valid
 from flaskcities.sites.forms import NewSiteForm
 from flaskcities.sites.models import Site
 
@@ -22,10 +22,9 @@ def home():
 @blueprint.route("/dash", methods=["GET", "POST"])
 @login_required
 def user_dashboard():
-	form = NewSiteForm()
-	if request.method == 'POST':
-		if form.validate_on_submit():
-			site = Site(form.name.data, current_user)
-			site.save()
-			return redirect(url_for('public.user_dashboard'))
-	return render_template('public/dash.html', form=form)
+    form = NewSiteForm()
+    if is_post_and_valid(form):
+        site = Site(form.name.data, current_user)
+        site.save()
+        return redirect(url_for('public.user_dashboard'))
+    return render_template('public/dash.html', form=form)
