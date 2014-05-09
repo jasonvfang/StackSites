@@ -13,11 +13,7 @@
     {% endblock %}
   </title>
   <meta name="viewport" content="width=device-width">
-  {% assets "css_all" %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='libs/font-awesome4/css/font-awesome.min.css') }}">
-  <link rel="stylesheet" href="{{ ASSET_URL }}">
-  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/lumen/bootstrap.min.css">
-  {% endassets %}
+  
 </head>
 <body>
   {% block body %}
@@ -28,6 +24,13 @@
     {% block content %}
     {% endblock %}
   </div>
+
+  {% assets "css_all" %}
+  <link rel="stylesheet" href="{{ ASSET_URL }}">
+  {% endassets %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='libs/font-awesome4/css/font-awesome.min.css') }}">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/lumen/bootstrap.min.css">
+
   {% assets "js_all" %}
     <script type="text/javascript" src="{{ ASSET_URL }}"></script> 
   {% endassets %}
