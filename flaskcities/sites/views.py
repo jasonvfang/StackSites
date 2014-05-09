@@ -17,20 +17,6 @@ blueprint = Blueprint('sites', __name__, url_prefix='/sites',
                       template_folder='../templates')
 
 
-@blueprint.route('/new', methods=['POST'])
-@login_required
-def new_site():
-    form = NewSiteForm()
-    if form.validate_on_submit():
-        name = form.name.data
-        site = Site(name, current_user)
-        site.save()
-        return redirect(url_for('public.user_dashboard'))
-    else:
-        from flaskcities.public.views import user_dashboard
-        return user_dashboard(newSiteForm=form)
-
-        
 @blueprint.route('/<username>/<site_name>')
 def view_site(username, site_name):
     if '.' in site_name:
