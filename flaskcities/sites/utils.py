@@ -27,11 +27,22 @@ def get_file_ext(filename):
     return filename.split('.')[-1]
 
 
+def get_keys(username, site_name):
+    bucket = get_bucket()
+    return bucket.list(prefix="{0}/{1}".format(username, site_name))
+
+
 def get_files_data(username, site_name):
     bucket = get_bucket()
-    keys = bucket.list(prefix="{0}/{1}".format(username, site_name))
+    keys = get_keys(username, site_name)
     return [{'name': get_fname_from_path(key.name), 'size': key.size, 'ext': get_file_ext(get_fname_from_path(key.name))} for key in keys]
     
+
+def delete_site_from_s3(username, site_name):
+    bucket = get_bucket()
+    keys = get_keys(username, site_name)
+    map(lambda key: key.delete(), keys)
+
     
 def upload_index_for_new_site(username, site_name):
     index = current_app.open_resource('templates/new_site.html')

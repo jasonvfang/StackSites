@@ -44,6 +44,13 @@
     </form>
   </div>
 </div>
+<hr>
+<div class='row'>
+  <div class='col-lg-4'>
+    <h4>Delete Site <span class='text-danger'><em>( Careful! )</em></span></h4>
+    <button class='btn btn-danger' id='deleteSiteButton' delete-target="{{ url_for('sites.delete_site', site_id=site.id) }}">Permanently Delete Site</button>
+  </div>
+</div>
 
 <div class="modal fade" id='deleteModal'>
   <div class="modal-dialog modal-sm">
@@ -80,6 +87,27 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<div class="modal fade" id='deleteSiteModal'>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title"><strong>You are about to perform an irreversible action.</strong></h4>
+      </div>
+      <div class="modal-body">
+        <h4>You are about to delete this site, and all the files with it. <em>Permanently.</em></h4>
+        <p>Are you sure you want to do this?</p>
+        <button type="button" class="btn btn-lg btn-success" data-dismiss="modal">UH NOPE</button>
+        <hr>
+        <a href="" id='deleteSiteModalButton' class='btn btn-danger btn-xs'>Delete Forever</a>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 {% endblock %}
 
 {% block extrajs %}
@@ -93,6 +121,11 @@
     $("#modalFilename").text(filename);
     $("#modalDeleteButton").attr('href', deleteURL);
     $("#deleteModal").modal();
+  });
+  $("#deleteSiteButton").click(function(event) {
+    var deleteSiteURL = $(this).attr('delete-target');
+    $("#deleteSiteModalButton").attr('href', deleteSiteURL);
+    $("#deleteSiteModal").modal();
   });
 </script>
 {% endblock %}

@@ -101,3 +101,13 @@ def delete_file(site_id, filename):
     owns_site(site)
     delete_s3_file(site.user.username, site.name, filename)
     return redirect(url_for('sites.manage_site', site_id=site_id))
+
+
+@blueprint.route('/delete_site/<int:site_id>')
+def delete_site(site_id):
+    site = Site.get_by_id(site_id)
+    owns_site(site)
+    name = site.name
+    site.delete_site()
+    flash("Your site '{0}' has been permanently deleted.".format(name), 'info')
+    return redirect(url_for('public.user_dashboard'))
