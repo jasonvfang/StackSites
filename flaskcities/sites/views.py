@@ -95,7 +95,7 @@ def view_file(username, site_id, filename):
     return Response(response=r.get(s3_path).text, mimetype=mimetype)
 
 
-@blueprint.route('/delete/<int:site_id>/<filename>')
+@blueprint.route('/delete/<int:site_id>/<filename>', methods=['POST'])
 def delete_file(site_id, filename):
     site = Site.get_by_id(site_id)
     owns_site(site)
@@ -103,7 +103,7 @@ def delete_file(site_id, filename):
     return redirect(url_for('sites.manage_site', site_id=site_id))
 
 
-@blueprint.route('/delete_site/<int:site_id>')
+@blueprint.route('/delete_site/<int:site_id>', methods=['POST'])
 def delete_site(site_id):
     site = Site.get_by_id(site_id)
     owns_site(site)

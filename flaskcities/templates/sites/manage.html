@@ -61,7 +61,10 @@
       </div>
       <div class="modal-body">
         <h3>Are you sure you want to delete <span id='modalFilename'>this file</span>?</h3>
-        <a class="btn btn-danger" id='modalDeleteButton' href="">Delete File</a>
+        <form role='form' id='deleteFileForm' method='post' action="">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type='submit' class='btn btn-danger'>Delete Forever</button>
+        </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -100,7 +103,10 @@
         <p>Are you sure you want to do this?</p>
         <button type="button" class="btn btn-lg btn-success" data-dismiss="modal">UH NOPE</button>
         <hr>
-        <a href="" id='deleteSiteModalButton' class='btn btn-danger btn-xs'>Delete Forever</a>
+        <form role='form' id='deleteSiteForm' method='post' action="">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type='submit' class='btn btn-danger btn-xs'>Delete Forever</button>
+        </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
@@ -116,15 +122,15 @@
     $("#uploadModal").modal();
   });
   $(".fileDelete").click(function(event) {
-    var deleteURL = $(this).attr('delete-target');
+    var deleteFileURL = $(this).attr('delete-target');
     var filename = $(this).attr('file-name');
     $("#modalFilename").text(filename);
-    $("#modalDeleteButton").attr('href', deleteURL);
+    $("#deleteFileForm").attr('action', deleteFileURL);
     $("#deleteModal").modal();
   });
   $("#deleteSiteButton").click(function(event) {
     var deleteSiteURL = $(this).attr('delete-target');
-    $("#deleteSiteModalButton").attr('href', deleteSiteURL);
+    $("#deleteSiteForm").attr('action', deleteSiteURL);
     $("#deleteSiteModal").modal();
   });
 </script>

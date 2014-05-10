@@ -6,7 +6,8 @@ import time
 from flaskcities import public, users, sites
 from flaskcities.assets import assets
 from flaskcities.settings import ProdConfig, DevConfig
-from flaskcities.extensions import db, bcrypt, login_manager, migrate, mail, SSLify
+from flaskcities.extensions import (db, bcrypt, login_manager,
+                                    migrate, mail, SSLify, csrf)
 
 
 
@@ -26,6 +27,7 @@ def register_extensions(app):
     migrate.init_app(app, db)
     mail.init_app(app)
     sslify = SSLify(app)
+    csrf.init_app(app)
     init_db(app)
     return None
 
