@@ -24,6 +24,7 @@ def register_extensions(app):
     assets.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
+    login_manager.session_protection = 'strong'
     migrate.init_app(app, db)
     mail.init_app(app)
     sslify = SSLify(app)
