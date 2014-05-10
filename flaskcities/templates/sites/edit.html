@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 <div class='row'>
   <div class='col-lg-10'>
     <div class='panel panel-default'>
@@ -55,12 +57,36 @@
         'filename': "{{ filename }}",
         'site_name': "{{ site.name }}"
       };
+
+      var csrftoken = $('meta[name=csrf-token]').attr('content');
+
+      $.ajaxSetup({
+          beforeSend: function(xhr, settings) {
+              if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+                  xhr.setRequestHeader("X-CSRFToken", csrftoken)
+              }
+          }
+      })
+
       $('#loadingText').removeClass('hidden');
       $('#unsavedText').addClass('hidden');
-      $.getJSON(target, jsondata, function(data) {
-        console.log('server says ' + data['status']);
-        $('#loadingText').addClass('hidden');
-      })
+
+      $.ajax({
+        type: 'post',
+        url: target,
+        data: JSON.stringify(jsondata),
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function(data) {
+          console.log('server says ' + data['status']);
+          $('#loadingText').addClass('hidden');
+        }
+      });
+
+      // $.getJSON(target, jsondata, function(data) {
+      //   console.log('server says ' + data['status']);
+      //   $('#loadingText').addClass('hidden');
+      // })
     });
   });
   

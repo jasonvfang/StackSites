@@ -72,13 +72,13 @@ def edit_file(site_id, filename):
                             site=site)
 
 
-@blueprint.route('/save/<int:site_id>')
+@blueprint.route('/save/<int:site_id>', methods=['POST'])
 def save_file(site_id):
     site = Site.get_by_id(site_id)
     owns_site(site)
-    filename = request.args.get('filename')
-    file_data = request.args.get('data')
-    site_name = request.args.get('site_name')
+    filename = request.json.get('filename')
+    file_data = request.json.get('data')
+    site_name = request.json.get('site_name')
     try:
         upload_to_s3(file_data, current_user.username,
                      site_name, filename, set_contents_from_str=True)
