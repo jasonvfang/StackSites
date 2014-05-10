@@ -26,5 +26,8 @@ def user_dashboard():
     if is_post_and_valid(form):
         site = Site(form.name.data, current_user)
         site.save()
+        if form.notify:
+            for notification in form.notify:
+                flash(notification[0], notification[1])
         return redirect(url_for('public.user_dashboard'))
     return render_template('public/dash.html', form=form)
