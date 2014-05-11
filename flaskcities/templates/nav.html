@@ -61,9 +61,11 @@
 
       {% if current_user and current_user.is_authenticated() %}
       
-        <form class='navbar-form navbar-right'>
-          <a class="btn btn-lg btn-primary" href="{{ url_for('users.logout') }}" id="logoutButton"><i class="fa fa-sign-out"></i> Log Out</a>
+        <form class='navbar-form navbar-right' method="POST" action="{{ url_for('users.logout') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type='submit' class='btn btn-lg btn-primary'><i class="fa fa-sign-out"></i> Log Out</button>
         </form>
+
         
 
       {% elif loginForm %}

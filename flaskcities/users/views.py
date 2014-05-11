@@ -26,7 +26,7 @@ def login():
         return redirect(url_for('public.home'))
 
 
-@blueprint.route("/logout", methods=["GET"])
+@blueprint.route("/logout", methods=["POST"])
 @login_required
 def logout():
     logout_user()
