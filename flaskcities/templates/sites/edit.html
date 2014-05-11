@@ -37,6 +37,7 @@
     url: "{{s3_path}}",
     success: function(result) {
       editor.setValue(result);
+      editor.gotoLine(1);
     }
   });
   editor.setTheme("ace/theme/monokai");
