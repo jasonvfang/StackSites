@@ -60,7 +60,7 @@ def activate(token):
         flash("Invalid activation link.", 'danger')
         return redirect(url_for('users.login_help'))
     if user.active:
-        return redirect(url_for('public.user_dash   board'))
+        return redirect(url_for('public.user_dashboard'))
     user.activate()
     flash("Your account has been activated.", 'success')
     return redirect(url_for('public.home'))
