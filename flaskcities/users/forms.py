@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from flask.ext.login import current_user
 from flask_wtf import Form
 from wtforms import TextField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
@@ -6,6 +7,44 @@ from wtforms.validators import DataRequired, Email, EqualTo, Length
 from flaskcities.users.models import User
 
 EXTRA_WHITESPACE = "The username you entered had an extra space (which was removed). If you don't know what that means, then don't worry."
+
+
+class ChangeEmailForm(Form):
+    email = TextField('Email',
+                       validators=[DataRequired("You must enter an email address."), Email()])
+
+    def validate(self):
+        initial_validation = super(ChangeEmailForm, self).validate()
+        if not initial_validation:
+            return False
+        if current_user.email == self.email.data:
+            self.email.errors.append('That is the same email address. Please enter a different email address.')
+            return False
+        conflicts = User.query.filter_by(email=self.email.data).all()
+        if conflicts:
+            self.email.errors.append('That email address is being used by another user. Please enter a different email address.')
+            return False
+        return True
+
+
+
+class ChangePasswordForm(Form):
+    old_password = PasswordField('Old Password', validators=[DataRequired('You must enter your current password.')])
+    new_password = PasswordField('New Password', validators=[DataRequired('You must enter your new password.')])
+    confirm_new = PasswordField('Confirm Password', validators=[DataRequired('Please re-type the password entered above.'),
+                                EqualTo('new_password', message='Passwords must match.')])
+
+    def validate(self):
+        initial_validation = super(ChangePasswordForm, self).validate()
+        if not initial_validation:
+            return False
+        if not current_user.check_password(self.old_password.data):
+            self.old_password.errors.append('The old password you entered is incorrect.')
+            return False
+        if current_user.check_password(self.new_password.data):
+            self.new_password.errors.append('You cannot use the same password as your new password.')
+            return False
+        return True
 
 
 class RegisterForm(Form):
@@ -137,7 +176,7 @@ class ForgotPasswordForm(Form):
 
 
 class ResetPasswordForm(Form):
-    email = TextField("Email", validators=[DataRequired("You must enter your email address.")])
+    email = TextField("Email", validators=[DataRequired("You must enter your email address."), Email()])
     password = PasswordField('Password',
                              validators=[DataRequired("You must enter a password."),
                              Length(min=6, max=40)])

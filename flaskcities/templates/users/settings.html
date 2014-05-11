@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class='row'>
+	<div class='col-lg-4 col-md-6 col-sm-6 col-xs-12'>
+		<h2>Change Email Address</h2>
+		<form role='form' id='changeEmailForm' method='POST' action="{{ url_for('users.change_email') }}">
+			{{ emailForm.csrf_token }}
+			<div class='form-group'>
+				<label for='inputEmail'>New Email Address</label>
+				{% if emailForm.email.errors %}
+					{% for error in emailForm.email.errors %}
+						<p class='text-danger'>{{ error }}</p>
+					{% endfor %}
+				{% endif %}
+				{{ emailForm.email(type='email', placeholder='New email address', class='form-control') }}
+			</div>
+			<button type='submit' id='changeEmailButton' class='btn btn-primary'>Change Email</button>
+		</form>
+	</div>
+
+	<div class='col-lg-4 col-md-6 col-sm-6 col-xs-12'>
+		<h2>Change Password</h2>
+		<form role='form' id='changePasswordForm' method="POST" action="{{ url_for('users.change_password') }}">
+			{{ passwordForm.csrf_token }}
+			<div class='form-group'>
+				<label for='inputOldPassword'>Old Password</label>
+				{% if passwordForm.old_password.errors %}
+					{% for error in passwordForm.old_password.errors %}
+						<p class='text-danger'>{{ error }}</p>
+					{% endfor %}
+				{% endif %}
+				{{ passwordForm.old_password(type='password', placeholder='Old password', class='form-control') }}
+			</div>
+
+			<div class='form-group'>
+				<label for='inputNewPassword'>New Password</label>
+				{% if passwordForm.new_password.errors %}
+					{% for error in passwordForm.new_password.errors %}
+						<p class='text-danger'>{{ error }}</p>
+					{% endfor %}
+				{% endif %}
+				{{ passwordForm.new_password(type='password', placeholder='New password', class='form-control') }}
+			</div>
+
+			<div class='form-group'>
+				<label for='inputConfirmPassword'>Re-type your new password to confirm.</label>
+				{% if passwordForm.confirm_new.errors %}
+					{% for error in passwordForm.confirm_new.errors %}
+						<p class='text-danger'>{{ error }}</p>
+					{% endfor %}
+				{% endif %}
+				{{ passwordForm.confirm_new(type='password', placeholder='Confirm new password', class='form-control') }}
+			</div>
+			<button type='submit' class='btn btn-primary'>Change Password</button>
+		</form>
+	</div>
+</div>
+{% endblock %}

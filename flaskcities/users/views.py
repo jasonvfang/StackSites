@@ -5,13 +5,48 @@ from flask.ext.login import login_user, login_required, logout_user, current_use
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from datetime import datetime
 
-from flaskcities.users.forms import RegisterForm, LoginForm, ResendConfirmationForm, ForgotPasswordForm, ResetPasswordForm
+from flaskcities.users.forms import (RegisterForm, LoginForm, ResendConfirmationForm,
+                                     ForgotPasswordForm, ResetPasswordForm, ChangeEmailForm, ChangePasswordForm)
 from flaskcities.users.utils import send_confirmation_email, send_password_reset_email
 from flaskcities.extensions import login_manager
 from flaskcities.utils import flash_errors
 from flaskcities.users.models import User
 
 blueprint = Blueprint('users', __name__, url_prefix='/users', static_folder="../static")
+
+
+@blueprint.route('/settings', methods=['GET'])
+def settings(emailForm=None, passwordForm=None):
+    if emailForm is None:
+        emailForm = ChangeEmailForm()
+    if passwordForm is None:
+        passwordForm = ChangePasswordForm()
+    return render_template('users/settings.html', emailForm=emailForm,
+                            passwordForm=passwordForm)
+
+
+@blueprint.route('/change_email', methods=['POST'])
+def change_email():
+    form = ChangeEmailForm()
+    if form.validate_on_submit():
+        new_email = form.email.data
+        current_user.email = new_email
+        current_user.save()
+        flash('Your email address has been changed to {0}'.format(new_email), 'success')
+        return redirect(url_for('users.settings'))
+    return settings(emailForm=form)
+
+
+@blueprint.route('/change_password', methods=['POST'])
+def change_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        current_user.set_password(form.new_password.data)
+        current_user.save()
+        flash('Your password has been changed.', 'success')
+        return redirect(url_for('users.settings'))
+    return settings(passwordForm=form)
+
 
 
 @blueprint.route("/login", methods=["POST"])
