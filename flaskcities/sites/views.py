@@ -48,6 +48,7 @@ def manage_site(site_id, form=None):
 
     
 @blueprint.route('/upload/<int:site_id>', methods=['POST'])
+@login_required
 def upload(site_id):
     site = Site.get_by_id(site_id)
     owns_site(site)
@@ -73,6 +74,7 @@ def edit_file(site_id, filename):
 
 
 @blueprint.route('/save/<int:site_id>', methods=['POST'])
+@login_required
 def save_file(site_id):
     site = Site.get_by_id(site_id)
     owns_site(site)
@@ -96,6 +98,7 @@ def view_file(username, site_id, filename):
 
 
 @blueprint.route('/delete/<int:site_id>/<filename>', methods=['POST'])
+@login_required
 def delete_file(site_id, filename):
     site = Site.get_by_id(site_id)
     owns_site(site)
@@ -104,6 +107,7 @@ def delete_file(site_id, filename):
 
 
 @blueprint.route('/delete_site/<int:site_id>', methods=['POST'])
+@login_required
 def delete_site(site_id):
     site = Site.get_by_id(site_id)
     owns_site(site)
