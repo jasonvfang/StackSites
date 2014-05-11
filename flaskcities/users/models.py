@@ -46,14 +46,7 @@ class User(UserMixin, CRUDMixin, db.Model):
         self.save()
         return self.activation_token
 
-    def activate(self, token):
-        s = Serializer(current_app.config['SECRET_KEY'])
-        try:
-            data = s.loads(token)
-        except:
-            return False
-        if data.get('activate') != self.id:
-            return False
+    def activate(self):
         self.active = True
         self.save()
         return True
@@ -61,6 +54,7 @@ class User(UserMixin, CRUDMixin, db.Model):
     def get_reset_token(self, expiration=3600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         self.password_reset_expiration = datetime.utcnow() + timedelta(hours=1)
+        self.save()
         return s.dumps({'reset': self.id})
 
     def reset_password(self, token):
