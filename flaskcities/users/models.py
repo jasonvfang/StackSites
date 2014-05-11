@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+from flask import current_app
 from flask.ext.login import UserMixin
 from datetime import datetime, timedelta
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 from flaskcities.database import db, CRUDMixin
 from flaskcities.extensions import bcrypt
-from flaskcities.users.utils import generate_secure_token
 from flaskcities.sites.models import Site
+from .utils import generate_secure_token
 
 
 class User(UserMixin, CRUDMixin, db.Model):
@@ -44,15 +46,33 @@ class User(UserMixin, CRUDMixin, db.Model):
         self.save()
         return self.activation_token
 
-    def get_reset_token(self):
-        self.password_reset_token = generate_secure_token()
-        self.password_reset_expiration = datetime.utcnow() + timedelta(hours=4)
-        self.save()
-        return self.password_reset_token
-
-    def activate(self):
+    def activate(self, token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return False
+        if data.get('activate') != self.id:
+            return False
         self.active = True
         self.save()
+        return True
+
+    def get_reset_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        self.password_reset_expiration = datetime.utcnow() + timedelta(hours=1)
+        return s.dumps({'reset': self.id})
+
+    def reset_password(self, token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return False
+        if data.get('reset') != self.id:
+            return False
+        return True
+
 
     def has_role(self, role):
         return self.roles != None and role in self.roles

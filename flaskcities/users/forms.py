@@ -137,6 +137,7 @@ class ForgotPasswordForm(Form):
 
 
 class ResetPasswordForm(Form):
+    email = TextField("Email", validators=[DataRequired("You must enter your email address.")])
     password = PasswordField('Password',
                              validators=[DataRequired("You must enter a password."),
                              Length(min=6, max=40)])

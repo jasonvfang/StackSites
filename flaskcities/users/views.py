@@ -2,6 +2,7 @@
 from flask import (Blueprint, request, render_template, flash,
                    url_for, redirect)
 from flask.ext.login import login_user, login_required, logout_user, current_user
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from datetime import datetime
 
 from flaskcities.users.forms import RegisterForm, LoginForm, ResendConfirmationForm, ForgotPasswordForm, ResetPasswordForm
@@ -55,13 +56,14 @@ def register():
 @blueprint.route("/activate/<token>")
 def activate(token):
     user = User.query.filter_by(activation_token=token).first()
-    if not user:
-        flash("You tried to use an invalid confirmation link. If this was an accident, please resend one.", 'danger')
-        return redirect(url_for('public.home'))
-    else:
-        user.activate()
-        flash("Your account has been activated.", 'success')
-        return redirect(url_for('public.home'))
+    if user is None:
+        flash("Invalid activation link.", 'danger')
+        return redirect(url_for('users.login_help'))
+    if user.active:
+        return redirect(url_for('public.user_dashboard'))
+
+    flash("Your account has been activated.", 'success')
+    return redirect(url_for('public.home'))
 
 
 @blueprint.route("/login_help", methods=["GET"])
@@ -100,19 +102,22 @@ def send_password_reset():
 
 @blueprint.route("/reset/<token>", methods=["GET", "POST"])
 def reset_password(token):
-    user = User.query.filter_by(password_reset_token=token).first()
-
-    if not user:
-        flash("The link to reset your password is invalid.", 'warning')
-        return redirect(url_for('public.home'))
-
-    if not user.password_reset_expiration > datetime.utcnow():
-        flash("The link to reset your password has expired.", 'warning')
+    if not current_user.is_anonymous():
+        flash('You cannot reset your password if you are already logged in.', 'info')
         return redirect(url_for('users.login_help'))
-
     else:
         form = ResetPasswordForm()
         if form.validate_on_submit():
+            user = User.query.filter_by(email=form.email.data).first()
+            if user is None:
+                flash('The email address you entered does not belong to any user.', 'danger')
+                return redirect(url_for('users.reset_password',
+                                         token=token,
+                                         form=ResetPasswordForm()))
+            if not user.reset_password(token) or not user.password_reset_expiration > datetime.utcnow():
+                flash('Invalid or expired password reset token.', 'danger')
+                return redirect(url_for('users.login_help'))
+
             if user.check_password(form.password.data):
                 flash("You cannot use the same password. Please use a different \
                       password.", 'warning')
