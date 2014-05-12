@@ -5,6 +5,7 @@ from wtforms import TextField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 
 from flaskcities.users.models import User
+from flaskcities.form_utils import has_upper_nonalpha
 
 EXTRA_WHITESPACE = "The username you entered had an extra space (which was removed). If you don't know what that means, then don't worry."
 
@@ -81,6 +82,11 @@ class RegisterForm(Form):
         user = User.query.filter_by(username=self.username.data).first()
         if user:
             self.username.errors.append("That username has already been taken.")
+            return False
+
+        results = has_upper_nonalpha(self.username.data, 'username')
+        if results:
+            self.username.errors.extend(results)
             return False
         
         self.user = user

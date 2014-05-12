@@ -1,5 +1,5 @@
 import re
-from string import ascii_lowercase
+from string import ascii_lowercase, digits
 
 
 def has_upper(s, field_name):
@@ -11,8 +11,8 @@ def has_upper(s, field_name):
 
 
 def has_nonalpha(s, field_name):
-    msg = 'The {0} you entered can only have alphabetic characters.'.format(field_name)
-    if not all([char in ascii_lowercase for char in s.lower()]):
+    msg = 'The {0} you entered can only have alphanumeric characters.'.format(field_name)
+    if not all([(char in ascii_lowercase or char in digits) for char in s.lower()]):
         return True, msg
     return False, None
 
