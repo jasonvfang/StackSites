@@ -3,21 +3,26 @@
 
 {% block content %}
 <div class="row">
-    <div class="jumbotron">
-        <div class='row'>
-        
-            <h1>FlaskCities</h1>
-            <hr>
-            <p class="lead">Learn by doing.</p>
-        
+  <div class='col-lg-7'>
+    <div class='panel panel-default'>
+      <div class='panel-heading clearfix'>
+        <h3 class='panel-title pull-left'>Try it out!</h3>
+        <div class='pull-right'>
+          <a class='btn btn-lg btn-primary' href="#"><i class="fa fa-floppy-o"></i> Save</a>
+          <a class='btn btn-lg btn-success' href="#"><i class="fa fa-external-link"></i> View</a>
         </div>
+      </div>
+      <div class='panel-body'>
+        <div id='editor' style='height: 30em;'></div>
+      </div>
     </div>
-    <div class='row'>
-        <div class='col-lg-4 col-md-4 col-sm-6 col-xs-12'>
-            <h3><i class="fa fa-pencil-square-o"></i> Lorem Ipsum</h3>
-            <p>Lorem ipsum dolor sit amet.</p>
-        </div>
-    </div>
+  </div>
+  <div class='col-lg-5'>
+    <h1>Practice makes perfect</h1>
+    <p class='lead'>Internalize patterns of modern web development faster and more thoroughly with <strong>FlaskCities</strong>.</p>
+    <h2>Memorization gets you nowhere</h2>
+    <p class='lead'>Don't just memorize syntax. FlaskCities helps you learn by giving you the tools to build and improve your own websites in seconds.</p>
+  </div>
 </div>
 {% endblock %}
 
@@ -26,4 +31,18 @@
   buttonClick("#logoutButton");
   buttonClick("#loginButton");
 </script> 
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"></script>
+<script type="text/javascript">
+  var editor = ace.edit("editor");
+  $.ajax({
+    url: "https://s3.amazonaws.com/flaskcities/new_site.html",
+    success: function(result) {
+      editor.setValue(result);
+      editor.gotoLine(1);
+    }
+  });
+  editor.setTheme("ace/theme/monokai");
+  editor.getSession().setMode('ace/mode/html');
+</script>
 {% endblock %}
