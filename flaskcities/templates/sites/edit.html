@@ -45,29 +45,38 @@
   var mode = modelist.getModeForPath("{{ s3_path }}").mode;
   editor.getSession().setMode(mode);
 
+  var unsaved = false;
+  var saving = false;
+  var typing = false;
   editor.getSession().on('change', function(e) {
-    $('#unsavedText').removeClass('hidden');
+    unsaved = true;
+    typing = true;
+    if (!saving)
+      $('#unsavedText').removeClass('hidden');
   });
 
-  $(document).ready(function() {
-    $("#saveButton").click(function() {
-      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};  
-      var target = $SCRIPT_ROOT + "{{ url_for('sites.save_file', site_id=site.id) }}";
+  var notTyping = function() { typing = false; }
+  var setNotTyping = setInterval(notTyping, 500);
+
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  var target = $SCRIPT_ROOT + "{{ url_for('sites.save_file', site_id=site.id) }}";
+  var csrftoken = $('meta[name=csrf-token]').attr('content');
+  $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken)
+        }
+      }
+  });
+
+  var saveEditorData = function saveEditorData() {
+    if (unsaved && !saving && !typing) {
+      saving = true;
       var jsondata = {
         'data': editor.getValue(),
         'filename': "{{ filename }}",
         'site_name': "{{ site.name }}"
       };
-
-      var csrftoken = $('meta[name=csrf-token]').attr('content');
-
-      $.ajaxSetup({
-          beforeSend: function(xhr, settings) {
-              if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
-                  xhr.setRequestHeader("X-CSRFToken", csrftoken)
-              }
-          }
-      })
 
       $('#loadingText').removeClass('hidden');
       $('#unsavedText').addClass('hidden');
@@ -79,12 +88,18 @@
         contentType: 'application/json',
         dataType: 'json',
         success: function(data) {
-          console.log('server says ' + data['status']);
           $('#loadingText').addClass('hidden');
+          unsaved = false;
+          saving = false;
         }
       });
-    });
+    }
+  }
+
+  $("#saveButton").click(function() {
+    saveEditorData();
   });
   
+  var autoSave = setInterval(saveEditorData, 1 * 1000);
 </script>
 {% endblock %}
