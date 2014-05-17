@@ -71,6 +71,7 @@
 
   var saveEditorData = function saveEditorData() {
     if (unsaved && !saving && !typing) {
+      unsaved = false;
       saving = true;
       var jsondata = {
         'data': editor.getValue(),
@@ -89,7 +90,10 @@
         dataType: 'json',
         success: function(data) {
           $('#loadingText').addClass('hidden');
-          unsaved = false;
+          if (unsaved) {
+            saving = false; 
+            saveEditorData();
+          }
           saving = false;
         }
       });
@@ -99,7 +103,7 @@
   $("#saveButton").click(function() {
     saveEditorData();
   });
-  
+
   var autoSave = setInterval(saveEditorData, 1 * 1000);
 </script>
 {% endblock %}
