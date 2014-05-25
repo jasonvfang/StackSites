@@ -36,19 +36,19 @@ def get_files_data(username, site_name):
     bucket = get_bucket()
     keys = get_keys(username, site_name)
     return [{'name': get_fname_from_path(key.name), 'size': key.size, 'ext': get_file_ext(get_fname_from_path(key.name))} for key in keys]
-    
+
 
 def delete_site_from_s3(username, site_name):
     bucket = get_bucket()
     keys = get_keys(username, site_name)
     map(lambda key: key.delete(), keys)
 
-    
+
 def upload_index_for_new_site(username, site_name):
     index = current_app.open_resource('templates/new_site.html')
     upload_to_s3(index, username, site_name, 'index.html')
-    
-    
+
+
 def upload_to_s3(file_obj, username, site_name, filename=None, set_contents_from_str=False):
     """Uploads the file_obj to an Amazon S3 bucket under filename if specified."""
     if not filename:
@@ -64,8 +64,8 @@ def upload_to_s3(file_obj, username, site_name, filename=None, set_contents_from
     else:
         key.set_contents_from_string(file_obj)
     key.set_acl('public-read')
-    
-    
+
+
 def make_s3_path(username, site_name, filename):
     """Creates a string combining the standard S3 URL and a filename to make a valid link."""
     protocol = 'http' if current_app.config['DEBUG'] else 'https'

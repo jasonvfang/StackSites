@@ -10,7 +10,6 @@ from flaskcities.extensions import (db, bcrypt, login_manager,
                                     migrate, mail, SSLify, csrf)
 
 
-
 def create_app():
     app = Flask(__name__)
     config_object = DevConfig if os.environ.get('DEBUG') == 'True' else ProdConfig

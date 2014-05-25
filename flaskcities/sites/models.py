@@ -34,4 +34,3 @@ class Site(CRUDMixin, db.Model):
     def __repr__(self):
         username = self.user or ""
         return "<Site ({0}, user: {1})>".format(self.name, username)
-

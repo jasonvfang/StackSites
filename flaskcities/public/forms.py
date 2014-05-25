@@ -7,14 +7,14 @@ from flaskcities.users.models import User
 
 
 class LoginForm(Form):
-    creds = TextField('Email or Username', 
-                       validators=[
-                       DataRequired("You forgot to enter your username or email.")
-                       ])
+    creds = TextField('Email or Username',
+                      validators=[
+                          DataRequired("You forgot to enter your username or email.")
+                      ])
     password = PasswordField('Password',
-                              validators=[
-                              DataRequired("You forgot to enter your password.")
-                              ])
+                             validators=[
+                                 DataRequired("You forgot to enter your password.")
+                             ])
 
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)

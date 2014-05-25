@@ -67,9 +67,8 @@ class User(UserMixin, CRUDMixin, db.Model):
             return False
         return True
 
-
     def has_role(self, role):
-        return self.roles != None and role in self.roles
+        return self.roles is not None and role in self.roles
 
     def add_role(self, role):
         if self.roles:

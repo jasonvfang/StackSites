@@ -12,7 +12,7 @@ EXTRA_WHITESPACE = "The username you entered had an extra space (which was remov
 
 class ChangeEmailForm(Form):
     email = TextField('Email',
-                       validators=[DataRequired("You must enter an email address."), Email()])
+                      validators=[DataRequired("You must enter an email address."), Email()])
 
     def validate(self):
         initial_validation = super(ChangeEmailForm, self).validate()
@@ -28,12 +28,11 @@ class ChangeEmailForm(Form):
         return True
 
 
-
 class ChangePasswordForm(Form):
     old_password = PasswordField('Old Password', validators=[DataRequired('You must enter your current password.')])
     new_password = PasswordField('New Password', validators=[DataRequired('You must enter your new password.')])
     confirm_new = PasswordField('Confirm Password', validators=[DataRequired('Please re-type the password entered above.'),
-                                EqualTo('new_password', message='Passwords must match.')])
+                                                                EqualTo('new_password', message='Passwords must match.')])
 
     def validate(self):
         initial_validation = super(ChangePasswordForm, self).validate()
@@ -49,15 +48,15 @@ class ChangePasswordForm(Form):
 
 
 class RegisterForm(Form):
-    username = TextField('Username', validators=[DataRequired("You must enter a username."), 
-                         Length(min=2, max=25)])
+    username = TextField('Username', validators=[DataRequired("You must enter a username."),
+                                                 Length(min=2, max=25)])
     email = TextField('Email',
-                       validators=[DataRequired("You must enter an email address."), Email(), Length(min=6, max=40)])
+                      validators=[DataRequired("You must enter an email address."), Email(), Length(min=6, max=40)])
     password = PasswordField('Password',
                              validators=[DataRequired("You must enter a password."), Length(min=6, max=40)])
     confirm = PasswordField('Verify password',
                             validators=[DataRequired("Please re-type the password entered above."), EqualTo('password', message='Passwords must match.')])
-    
+
     notify = []
 
     def __init__(self, *args, **kwargs):
@@ -88,20 +87,20 @@ class RegisterForm(Form):
         if results:
             self.username.errors.extend(results)
             return False
-        
+
         self.user = user
-        return True 
+        return True
 
 
 class LoginForm(Form):
-    creds = TextField('Email or Username', 
-                       validators=[
-                       DataRequired("You forgot to enter your username or email.")
-                       ])
+    creds = TextField('Email or Username',
+                      validators=[
+                          DataRequired("You forgot to enter your username or email.")
+                      ])
     password = PasswordField('Password',
-                              validators=[
-                              DataRequired("You forgot to enter your password.")
-                              ])
+                             validators=[
+                                 DataRequired("You forgot to enter your password.")
+                             ])
     activated = BooleanField("Account Status")
 
     def __init__(self, *args, **kwargs):
@@ -185,10 +184,10 @@ class ResetPasswordForm(Form):
     email = TextField("Email", validators=[DataRequired("You must enter your email address."), Email()])
     password = PasswordField('Password',
                              validators=[DataRequired("You must enter a password."),
-                             Length(min=6, max=40)])
+                                         Length(min=6, max=40)])
     confirm = PasswordField('Verify password',
                             validators=[DataRequired("Please re-type the password entered above."),
-                            EqualTo('password', message='Passwords must match.')])
+                                        EqualTo('password', message='Passwords must match.')])
 
     def __init__(self, *args, **kwargs):
         super(ResetPasswordForm, self).__init__(*args, **kwargs)

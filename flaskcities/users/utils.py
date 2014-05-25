@@ -8,12 +8,12 @@ from flask.ext.mail import Message
 
 def send_password_reset_email(user):
     reset_link = url_for(
-                    'users.reset_password',
-                    token = user.get_reset_token(),
-                    _external=True
-                 )
+        'users.reset_password',
+        token=user.get_reset_token(),
+        _external=True
+    )
     msg = """
-Click the link below to reset your FlaskCities password. 
+Click the link below to reset your FlaskCities password.
 
 {0}""".format(str(reset_link))
     send_email("Reset your password", msg, str(user.email))
@@ -21,12 +21,12 @@ Click the link below to reset your FlaskCities password.
 
 def send_confirmation_email(user):
     activation_link = url_for(
-                        'users.activate',
-                        token=str(user.get_activation_token()),
-                        _external=True
-                      )
+        'users.activate',
+        token=str(user.get_activation_token()),
+        _external=True
+    )
     msg = """
-Click the link below to activate your account with FlaskCities! 
+Click the link below to activate your account with FlaskCities!
 
 {0}""".format(str(activation_link))
     send_email("Confirm your account", msg, str(user.email))

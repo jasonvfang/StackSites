@@ -22,7 +22,7 @@ def settings(emailForm=None, passwordForm=None):
     if passwordForm is None:
         passwordForm = ChangePasswordForm()
     return render_template('users/settings.html', emailForm=emailForm,
-                            passwordForm=passwordForm)
+                           passwordForm=passwordForm)
 
 
 @blueprint.route('/change_email', methods=['POST'])
@@ -46,7 +46,6 @@ def change_password():
         flash('Your password has been changed.', 'success')
         return redirect(url_for('users.settings'))
     return settings(passwordForm=form)
-
 
 
 @blueprint.route("/login", methods=["POST"])
@@ -109,7 +108,7 @@ def login_help(resendForm=None, passwordForm=None):
     if not passwordForm:
         passwordForm = ForgotPasswordForm()
     return render_template('users/login_help.html',
-                            resendForm=resendForm, passwordForm=passwordForm)
+                           resendForm=resendForm, passwordForm=passwordForm)
 
 
 @blueprint.route("/resend", methods=["POST"])
@@ -147,8 +146,8 @@ def reset_password(token):
             if user is None:
                 flash('The email address you entered does not belong to any user.', 'danger')
                 return redirect(url_for('users.reset_password',
-                                         token=token,
-                                         form=ResetPasswordForm()))
+                                        token=token,
+                                        form=ResetPasswordForm()))
             if not user.reset_password(token) or not user.password_reset_expiration > datetime.utcnow():
                 flash('Invalid or expired password reset token.', 'danger')
                 return redirect(url_for('users.login_help'))
@@ -157,8 +156,8 @@ def reset_password(token):
                 flash("You cannot use the same password. Please use a different \
                       password.", 'warning')
                 return redirect(url_for('users.reset_password',
-                                         token=token,
-                                         form=ResetPasswordForm()))
+                                        token=token,
+                                        form=ResetPasswordForm()))
 
             user.set_password(form.password.data)
             user.password_reset_expiration = datetime.utcnow()

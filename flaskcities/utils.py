@@ -15,4 +15,4 @@ def is_auth():
 
 
 def is_post_and_valid(form):
-	return request.method == 'POST' and form.validate_on_submit()
+    return request.method == 'POST' and form.validate_on_submit()

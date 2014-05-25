@@ -22,14 +22,14 @@ FILES_ALLOWED_MSG = 'You can only upload files with one of the following extensi
 
 class NewSiteForm(Form):
     name = TextField('Name', validators=[DataRequired('You have to enter a name for your site.'),
-                     Length(min=3, max=20, message='The site name must be between 3 and 20 characters long.')])
+                                         Length(min=3, max=20, message='The site name must be between 3 and 20 characters long.')])
 
     notify = []
 
     def validate(self):
-    	initial_validation = super(NewSiteForm, self).validate()
-    	if not initial_validation:
-    		return False
+        initial_validation = super(NewSiteForm, self).validate()
+        if not initial_validation:
+            return False
 
         if ' ' in self.name.data:
             self.notify.append((EXTRA_WHITESPACE, 'info'))
@@ -44,16 +44,16 @@ class NewSiteForm(Form):
             self.name.errors.extend(results)
             return False
 
-    	matching_sites = filter(lambda site: site.name == self.name.data, current_user.sites)
-    	if len(matching_sites) > 0:
-    		self.name.errors.append('A site with that name already exists under your account.')
-    		return False
-    	return True
-            
+        matching_sites = filter(lambda site: site.name == self.name.data, current_user.sites)
+        if len(matching_sites) > 0:
+            self.name.errors.append('A site with that name already exists under your account.')
+            return False
+        return True
+
     def __repr__(self):
         return "<NewSiteForm ({0})>".format(self.name)
 
 
 class UploadFilesForm(Form):
     files = FileField('files', validators=[FileRequired("You must select a file."),
-                       FileAllowed(ALLOWED_FILE_EXTS, FILES_ALLOWED_MSG)])
+                                           FileAllowed(ALLOWED_FILE_EXTS, FILES_ALLOWED_MSG)])

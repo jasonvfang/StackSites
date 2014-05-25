@@ -13,8 +13,7 @@ from flaskcities.utils import flash_errors
 
 IMAGE_EXTS = ['jpg', 'png', 'svg', 'gif', 'bmp', 'webp']
 
-blueprint = Blueprint('sites', __name__, url_prefix='/sites', 
-                      template_folder='../templates')
+blueprint = Blueprint('sites', __name__, url_prefix='/sites', template_folder='../templates')
 
 
 @blueprint.route('/<username>/<site_name>')
@@ -46,7 +45,7 @@ def manage_site(site_id, form=None):
         form = UploadFilesForm()
     return render_template('sites/manage.html', site=site, form=form, image_exts=IMAGE_EXTS)
 
-    
+
 @blueprint.route('/upload/<int:site_id>', methods=['POST'])
 @login_required
 def upload(site_id):
@@ -69,8 +68,7 @@ def edit_file(site_id, filename):
     site = Site.get_by_id(site_id)
     owns_site(site)
     s3_path = make_s3_path(current_user.username, site.name, filename)
-    return render_template('sites/edit.html', s3_path=s3_path, filename=filename,
-                            site=site)
+    return render_template('sites/edit.html', s3_path=s3_path, filename=filename, site=site)
 
 
 @blueprint.route('/save/<int:site_id>', methods=['POST'])
@@ -82,10 +80,9 @@ def save_file(site_id):
     file_data = request.json.get('data')
     site_name = request.json.get('site_name')
     try:
-        upload_to_s3(file_data, current_user.username,
-                     site_name, filename, set_contents_from_str=True)
+        upload_to_s3(file_data, current_user.username, site_name, filename, set_contents_from_str=True)
         return jsonify({'status': 'success'})
-    except Exception, e:
+    except Exception as e:
         return jsonify({'status': 'error', 'error': str(e)})
 
 
