@@ -2,6 +2,7 @@ import boto
 import ntpath
 import mimetypes
 import werkzeug
+import requests
 from urlparse import urljoin
 
 from flask import current_app, abort
@@ -76,6 +77,11 @@ def update_temp_in_s3(temp_file_id, data):
     key.set_metadata('Content-Type', mimetype)
     key.set_contents_from_string(data)
     key.set_acl('public-read')
+
+
+def transfer_landing_demo(temp_file_id, username, site_name):
+    temp_file_string_data = requests.get(make_s3_path_for_temp(temp_file_id)).content
+    upload_to_s3(temp_file_string_data, username, site_name, 'index.html', True)
 
 
 def make_s3_path_for_temp(temp_file_id):

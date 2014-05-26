@@ -26,14 +26,18 @@ class User(UserMixin, CRUDMixin, db.Model):
 
     sites = db.relationship('Site', backref='user')
 
-    def __init__(self, username, email, password):
+    def __init__(self, username, email, password, temp_file_id=None):
         self.username = username
         self.email = email
         self.created_at = datetime.utcnow()
         self.active = False
         self.roles = frozenset()
         self.set_password(password)
-        self.sites.append(Site('home', self))
+        if temp_file_id is not None:
+            site = Site('home', self, temp_file_id=temp_file_id)
+        else:
+            site = Site('home', self)
+        self.sites.append(site)
 
     def set_password(self, password):
         self.pwdhash = bcrypt.generate_password_hash(password)
@@ -77,6 +81,10 @@ class User(UserMixin, CRUDMixin, db.Model):
             self.roles = frozenset(elems)
         else:
             self.roles = frozenset((role,))
+
+    def delete_self(self):
+        map(lambda x: x.delete_site(), self.sites)
+        self.delete()
 
     def __repr__(self):
         return "<User ({0}, id: {1})>".format(self.username, self.id)

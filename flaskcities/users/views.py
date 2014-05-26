@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import (Blueprint, request, render_template, flash,
-                   url_for, redirect)
+                   url_for, redirect, session)
 from flask.ext.login import login_user, login_required, logout_user, current_user
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from datetime import datetime
@@ -75,9 +75,10 @@ def register():
         return redirect(url_for('public.home'))
 
     if form.validate_on_submit():
+        temp_file_id = session.get('temp_editor_identity')
         new_user = User.create(username=form.username.data,
                                email=form.email.data,
-                               password=form.password.data)
+                               password=form.password.data, temp_file_id=temp_file_id)
         send_confirmation_email(new_user)
         flash("Your account has been created. Please check your inbox for an activation email.", 'warning')
         if form.notify:
