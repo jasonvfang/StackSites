@@ -9,8 +9,8 @@
     <div class='panel panel-default'>
       <div class='panel-heading clearfix'>
         <div class='pull-right'>
-          <a class='btn btn-lg btn-primary' id='saveButton' href="#"><i class="fa fa-floppy-o"></i> Save</a>
-          <a class='btn btn-lg btn-success' href="#"><i class="fa fa-external-link"></i> View</a>
+          <button type='button' class='btn btn-lg btn-primary' id='saveButton'><i class="fa fa-floppy-o"></i> Save</button>
+          <a class='btn btn-lg btn-success' id='viewSiteButton' href="#" target='_blank'><i class="fa fa-external-link"></i> View</a>
         </div>
       </div>
       <div class='panel-body'>
@@ -41,7 +41,7 @@
   var temp_file_url = "https://s3.amazonaws.com/flaskcities/new_site.html";
   var new_visitor = "{{ session['new_visitor'] }}";
   if (temp_file_id && !new_visitor)
-    temp_file_url = "https://s3.amazonaws.com/flaskcities-temp/" + temp_file_id + '.html';
+    temp_file_url = "{{ url_for('public.view_temp_file', temp_file_id=session['temp_editor_identity']) }}";
 
   $.ajax({
     url: temp_file_url,
@@ -50,12 +50,14 @@
       editor.gotoLine(1);
     }
   });
+  
   editor.setTheme("ace/theme/monokai");
   editor.getSession().setMode('ace/mode/html');
 
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
   var target = $SCRIPT_ROOT + "{{ url_for('public.save_temp_file', temp_file_id=session['temp_editor_identity']) }}";
   var csrftoken = $('meta[name=csrf-token]').attr('content');
+  $("#viewSiteButton").attr('href', temp_file_url);
 
   $.ajaxSetup({
       beforeSend: function(xhr, settings) {

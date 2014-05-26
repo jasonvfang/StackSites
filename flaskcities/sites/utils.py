@@ -78,6 +78,12 @@ def update_temp_in_s3(temp_file_id, data):
     key.set_acl('public-read')
 
 
+def make_s3_path_for_temp(temp_file_id):
+    bucket = get_bucket(temp_bucket=True)
+    protocol = 'http' if current_app.config['DEBUG'] else 'https'
+    s3_path = "{0}://s3.amazonaws.com/{1}/{2}.html".format(protocol, current_app.config['TEMP_BUCKET_NAME'], temp_file_id)
+    return s3_path
+
 
 def make_s3_path(username, site_name, filename):
     """Creates a string combining the standard S3 URL and a filename to make a valid link."""

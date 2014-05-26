@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 import random
-
+import mimetypes
+import requests
 from flask import (Blueprint, request, render_template, flash,
-                   url_for, redirect, session, jsonify)
+                   url_for, redirect, session, jsonify, Response)
 from flask.ext.login import login_user, login_required, logout_user, current_user
 
 from flaskcities.users.forms import LoginForm
 from flaskcities.users.models import User
 from flaskcities.utils import is_auth, is_post_and_valid
 from flaskcities.sites.forms import NewSiteForm
-from flaskcities.sites.utils import update_temp_in_s3
+from flaskcities.sites.utils import update_temp_in_s3, make_s3_path_for_temp
 from flaskcities.sites.models import Site
 
 blueprint = Blueprint('public', __name__, static_folder="../static")
@@ -36,6 +37,13 @@ def save_temp_file(temp_file_id):
     from flaskcities.sites.utils import upload_to_s3
     update_temp_in_s3(temp_file_id, file_data)
     return jsonify({'status': 'success'})
+
+
+@blueprint.route('/view_temp/<temp_file_id>')
+def view_temp_file(temp_file_id):
+    s3_path = make_s3_path_for_temp(temp_file_id)
+    mimetype = mimetypes.guess_type(s3_path)[0]
+    return Response(response=requests.get(s3_path).content, mimetype=mimetype)
 
 
 @blueprint.route("/dash", methods=["GET", "POST"])
