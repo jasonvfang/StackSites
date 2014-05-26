@@ -2,13 +2,14 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 <div class="row">
   <div class='col-lg-7'>
     <div class='panel panel-default'>
       <div class='panel-heading clearfix'>
-        <h3 class='panel-title pull-left'>Try it out!</h3>
         <div class='pull-right'>
-          <a class='btn btn-lg btn-primary' href="#"><i class="fa fa-floppy-o"></i> Save</a>
+          <a class='btn btn-lg btn-primary' id='saveButton' href="#"><i class="fa fa-floppy-o"></i> Save</a>
           <a class='btn btn-lg btn-success' href="#"><i class="fa fa-external-link"></i> View</a>
         </div>
       </div>
@@ -35,8 +36,15 @@
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"></script>
 <script type="text/javascript">
   var editor = ace.edit("editor");
+  var temp_file_id = "{{ session['temp_editor_identity'] }}";
+
+  var temp_file_url = "https://s3.amazonaws.com/flaskcities/new_site.html";
+  var new_visitor = "{{ session['new_visitor'] }}";
+  if (temp_file_id && !new_visitor)
+    temp_file_url = "https://s3.amazonaws.com/flaskcities-temp/" + temp_file_id + '.html';
+
   $.ajax({
-    url: "https://s3.amazonaws.com/flaskcities/new_site.html",
+    url: temp_file_url,
     success: function(result) {
       editor.setValue(result);
       editor.gotoLine(1);
@@ -44,5 +52,34 @@
   });
   editor.setTheme("ace/theme/monokai");
   editor.getSession().setMode('ace/mode/html');
+
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  var target = $SCRIPT_ROOT + "{{ url_for('public.save_temp_file', temp_file_id=session['temp_editor_identity']) }}";
+  var csrftoken = $('meta[name=csrf-token]').attr('content');
+
+  $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken)
+        }
+      }
+  });
+
+  $('#saveButton').click(function() {
+    var jsondata = {
+      'data': editor.getValue()
+    };
+
+    $.ajax({
+        type: 'post',
+        url: target,
+        data: JSON.stringify(jsondata),
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function(data) {
+        }
+      });
+
+  });
 </script>
 {% endblock %}

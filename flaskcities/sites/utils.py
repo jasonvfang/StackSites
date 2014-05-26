@@ -8,12 +8,14 @@ from flask import current_app, abort
 from flask.ext.login import current_user
 
 
-def get_bucket():
+def get_bucket(temp_bucket=False):
     """Returns a boto Bucket object."""
     from flask import current_app
     access_key_id = current_app.config['AWS_ACCESS_KEY']
     secret = current_app.config['AWS_SECRET_KEY']
     bucket_name = current_app.config['BUCKET_NAME']
+    if temp_bucket:
+        bucket_name = current_app.config['TEMP_BUCKET_NAME']
     conn = boto.connect_s3(access_key_id, secret)
     return conn.get_bucket(bucket_name)
 
@@ -64,6 +66,17 @@ def upload_to_s3(file_obj, username, site_name, filename=None, set_contents_from
     else:
         key.set_contents_from_string(file_obj)
     key.set_acl('public-read')
+
+
+def update_temp_in_s3(temp_file_id, data):
+    bucket = get_bucket(temp_bucket=True)
+    fname = "{0}.html".format(temp_file_id)
+    key = bucket.new_key(fname)
+    mimetype = mimetypes.guess_type(fname)[0]
+    key.set_metadata('Content-Type', mimetype)
+    key.set_contents_from_string(data)
+    key.set_acl('public-read')
+
 
 
 def make_s3_path(username, site_name, filename):
