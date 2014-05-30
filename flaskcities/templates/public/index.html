@@ -54,6 +54,7 @@
   editor.setTheme("ace/theme/monokai");
   editor.getSession().setMode('ace/mode/html');
 
+
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
   var target = $SCRIPT_ROOT + "{{ url_for('public.save_temp_file', temp_file_id=session['temp_editor_identity']) }}";
   var csrftoken = $('meta[name=csrf-token]').attr('content');
@@ -71,6 +72,7 @@
     var jsondata = {
       'data': editor.getValue()
     };
+    $("#saveButton").html("<i class='fa fa-cog fa-spin'></i> Saving");
 
     $.ajax({
         type: 'post',
@@ -79,6 +81,7 @@
         contentType: 'application/json',
         dataType: 'json',
         success: function(data) {
+          $("#saveButton").html("<i class='fa fa-floppy-o'></i> Save");
         }
       });
 
