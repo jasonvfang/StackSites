@@ -4,8 +4,30 @@
 <div id="transparent-container">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
+<div class="row" id="statusBar" style="margin-bottom: 15px;">
+  <div class="col-lg-1"></div>
+  <div class='col-lg-2'>
+    <p class='text-info hidden' id='loadingText'>Saving changes <i class="fa fa-refresh fa-spin"></i></p>
+    <p class='text-warning hidden' id='unsavedText'>Unsaved changes <i class="fa fa-exclamation-triangle"></i></p>
+  </div>
+  <div class='col-lg-4'>
+    <div class='btn-group'>
+      <a class='btn btn-default' href="{{ url_for('sites.view_file', username=site.user.username, site_id=site.id, filename=filename) }}" target='_blank'>View {{ filename }}</a>
+      <a class='btn btn-primary' href="{{ url_for('sites.view_site', username=site.user.username, site_name=site.name) }}" target='_blank'>View Site</a>
+      <a class='btn btn-info' href="{{ url_for('sites.manage_site', site_id=site.id) }}"><i class="fa fa-long-arrow-left"></i> Back to Site</a>
+    </div>
+  </div>
+  <div class="col-lg-2">
+    <form role="form">
+      <div class="checkbox-inline">
+        <label><input type="checkbox" name="previewCheckbox" id="previewCheckbox" value="">Hide Preview</label>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class='row'>
-  <div class='col-lg-6' id="editorColumn">
+  <div class='col-lg-7' id="editorColumn">
     <div class='panel panel-default'>
       <div class="panel-heading">
          <h3 class="panel-title">Editing <strong>{{ filename }}</strong></h3>
@@ -26,21 +48,6 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class='col-lg-1'>
-    <p class='text-info hidden' id='loadingText'>Saving changes <i class="fa fa-refresh fa-spin"></i></p>
-    <p class='text-warning hidden' id='unsavedText'>Unsaved changes <i class="fa fa-exclamation-triangle"></i></p>
-    <div class='btn-group-vertical'>
-      <a class='btn btn-default' href="{{ url_for('sites.view_file', username=site.user.username, site_id=site.id, filename=filename) }}" target='_blank'>View {{ filename }}</a>
-      <a class='btn btn-primary' href="{{ url_for('sites.view_site', username=site.user.username, site_name=site.name) }}" target='_blank'>View Site</a>
-    </div>
-    <form role="form">
-      <div class="checkbox">
-        <label><input type="checkbox" name="previewCheckbox" id="previewCheckbox" value="">Hide Preview</label>
-      </div>
-    </form>
-    <hr>
-    <a class='btn btn-info' href="{{ url_for('sites.manage_site', site_id=site.id) }}"><i class="fa fa-long-arrow-left"></i> Back to Site</a>
   </div>
 </div>
 </div>
@@ -69,12 +76,12 @@
     if (!showPreview) {
       $("#previewColumn").addClass('hidden');
       $("#transparent-container").wrap("<div class='container' id='wrappingContainer'></div>");
-      $("#editorColumn").attr('class', 'col-lg-10');
+      $("#editorColumn").attr('class', 'col-lg-12');
 
     } else {
       $("#previewColumn").removeClass('hidden');
       $("#transparent-container").unwrap();
-      $("#editorColumn").attr('class', 'col-lg-6');
+      $("#editorColumn").attr('class', 'col-lg-7');
     }
   });
 
