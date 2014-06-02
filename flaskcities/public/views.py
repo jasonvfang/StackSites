@@ -21,12 +21,13 @@ def home():
     if is_auth():
         return redirect(url_for('public.user_dashboard'))
     form = LoginForm()
-    if not session.get('temp_editor_identity'):
-        session['new_visitor'] = 'True'
-        session['temp_editor_identity'] = '%030x' % random.randrange(16**30)
+
+    if not session.get('temp_file_id'):
+        session['create_new_temp_file'] = True
+        session['temp_file_id'] = '%030x' % random.randrange(16**30)
     else:
-        if 'new_visitor' in session:
-            del session['new_visitor']
+        session['create_new_temp_file'] = ''
+
     return render_template('public/index.html', loginForm=form)
 
 

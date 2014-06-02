@@ -36,12 +36,14 @@
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"></script>
 <script type="text/javascript">
   var editor = ace.edit("editor");
-  var temp_file_id = "{{ session['temp_editor_identity'] }}";
+  var temp_file_id = "{{ session['temp_file_id'] }}";
 
   var temp_file_url = "https://s3.amazonaws.com/flaskcities/new_site.html";
-  var new_visitor = "{{ session['new_visitor'] }}";
-  if (temp_file_id && !new_visitor)
-    temp_file_url = "{{ url_for('public.view_temp_file', temp_file_id=session['temp_editor_identity']) }}";
+
+  var create_new_temp_file = "{{ session['create_new_temp_file'] }}" ? true : false;
+
+  if (!create_new_temp_file) 
+    temp_file_url = "{{ url_for('public.view_temp_file', temp_file_id=session['temp_file_id']) }}";
 
   $.ajax({
     url: temp_file_url,
@@ -56,9 +58,11 @@
 
 
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-  var target = $SCRIPT_ROOT + "{{ url_for('public.save_temp_file', temp_file_id=session['temp_editor_identity']) }}";
+  var target = $SCRIPT_ROOT + "{{ url_for('public.save_temp_file', temp_file_id=session['temp_file_id']) }}";
   var csrftoken = $('meta[name=csrf-token]').attr('content');
   $("#viewSiteButton").attr('href', temp_file_url);
+
+  var replaceViewUrl = !create_new_temp_file;
 
   $.ajaxSetup({
       beforeSend: function(xhr, settings) {
@@ -73,6 +77,10 @@
       'data': editor.getValue()
     };
     $("#saveButton").html("<i class='fa fa-cog fa-spin'></i> Saving");
+    if (!replaceViewUrl) {
+        $("#viewSiteButton").attr('href', "{{ url_for('public.view_temp_file', temp_file_id=session['temp_file_id']) }}");
+        replaceViewUrl = true;
+    }
 
     $.ajax({
         type: 'post',

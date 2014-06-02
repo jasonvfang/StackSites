@@ -75,7 +75,7 @@ def register():
         return redirect(url_for('public.home'))
 
     if form.validate_on_submit():
-        temp_file_id = session.get('temp_editor_identity')
+        temp_file_id = session.get('temp_file_id')
         new_user = User.create(username=form.username.data,
                                email=form.email.data,
                                password=form.password.data, temp_file_id=temp_file_id)
