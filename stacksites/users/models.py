@@ -4,9 +4,9 @@ from flask.ext.login import UserMixin
 from datetime import datetime, timedelta
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
-from flaskcities.database import db, CRUDMixin
-from flaskcities.extensions import bcrypt
-from flaskcities.sites.models import Site
+from stacksites.database import db, CRUDMixin
+from stacksites.extensions import bcrypt
+from stacksites.sites.models import Site
 from .utils import generate_secure_token
 
 

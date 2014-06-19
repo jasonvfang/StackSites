@@ -9,7 +9,7 @@ from flask import Response, Blueprint, render_template, url_for, redirect, make_
 from .forms import NewSiteForm, UploadFilesForm
 from .models import Site
 from .utils import upload_to_s3, make_s3_path, owns_site, delete_s3_file
-from flaskcities.utils import flash_errors
+from stacksites.utils import flash_errors
 
 IMAGE_EXTS = ['jpg', 'png', 'svg', 'gif', 'bmp', 'webp']
 
@@ -19,7 +19,7 @@ blueprint = Blueprint('sites', __name__, url_prefix='/sites', template_folder='.
 @blueprint.route('/<username>/<site_name>')
 def view_site(username, site_name):
     if '.' in site_name:
-        from flaskcities.users.models import User
+        from stacksites.users.models import User
         ref = request.referrer.split('/')
         username = ref[-2]
         ref_site_name = ref[-1]

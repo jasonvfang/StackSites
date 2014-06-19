@@ -4,8 +4,8 @@ from flask_wtf import Form
 from wtforms import TextField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 
-from flaskcities.users.models import User
-from flaskcities.form_utils import has_upper_nonalpha
+from stacksites.users.models import User
+from stacksites.form_utils import has_upper_nonalpha
 
 EXTRA_WHITESPACE = "The username you entered had an extra space (which was removed). If you don't know what that means, then don't worry."
 

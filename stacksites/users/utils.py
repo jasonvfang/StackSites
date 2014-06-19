@@ -13,7 +13,7 @@ def send_password_reset_email(user):
         _external=True
     )
     msg = """
-Click the link below to reset your FlaskCities password.
+Click the link below to reset your stacksites password.
 
 {0}""".format(str(reset_link))
     send_email("Reset your password", msg, str(user.email))
@@ -26,14 +26,14 @@ def send_confirmation_email(user):
         _external=True
     )
     msg = """
-Click the link below to activate your account with FlaskCities!
+Click the link below to activate your account with stacksites!
 
 {0}""".format(str(activation_link))
     send_email("Confirm your account", msg, str(user.email))
 
 
 def send_email(subject, body, address):
-    from flaskcities.app import mail
+    from stacksites.app import mail
     msg = Message(subject, recipients=[address])
     msg.body = body
     mail.send(msg)

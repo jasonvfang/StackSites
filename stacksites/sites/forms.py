@@ -8,7 +8,7 @@ from wtforms.validators import DataRequired, Length
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 
 from .models import Site
-from flaskcities.form_utils import has_upper_nonalpha
+from stacksites.form_utils import has_upper_nonalpha
 
 EXTRA_WHITESPACE = "The site name you entered had an extra space (which was removed). If you don't know what that means, then don't worry."
 

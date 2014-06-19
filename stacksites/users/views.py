@@ -5,12 +5,12 @@ from flask.ext.login import login_user, login_required, logout_user, current_use
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from datetime import datetime
 
-from flaskcities.users.forms import (RegisterForm, LoginForm, ResendConfirmationForm,
+from stacksites.users.forms import (RegisterForm, LoginForm, ResendConfirmationForm,
                                      ForgotPasswordForm, ResetPasswordForm, ChangeEmailForm, ChangePasswordForm)
-from flaskcities.users.utils import send_confirmation_email, send_password_reset_email
-from flaskcities.extensions import login_manager
-from flaskcities.utils import flash_errors
-from flaskcities.users.models import User
+from stacksites.users.utils import send_confirmation_email, send_password_reset_email
+from stacksites.extensions import login_manager
+from stacksites.utils import flash_errors
+from stacksites.users.models import User
 
 blueprint = Blueprint('users', __name__, url_prefix='/users', static_folder="../static")
 

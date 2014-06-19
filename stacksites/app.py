@@ -3,10 +3,10 @@ from flask import Flask
 import os
 import time
 
-from flaskcities import public, users, sites
-from flaskcities.assets import assets
-from flaskcities.settings import ProdConfig, DevConfig
-from flaskcities.extensions import (db, bcrypt, login_manager,
+from stacksites import public, users, sites
+from stacksites.assets import assets
+from stacksites.settings import ProdConfig, DevConfig
+from stacksites.extensions import (db, bcrypt, login_manager,
                                     migrate, mail, SSLify, csrf)
 
 
@@ -40,8 +40,8 @@ def register_blueprints(app):
 
 
 def init_db(app):
-    from flaskcities.users import models
-    from flaskcities.sites import models
+    from stacksites.users import models
+    from stacksites.sites import models
     db.init_app(app)
     with app.app_context():
         db.create_all()

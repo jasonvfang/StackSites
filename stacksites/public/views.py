@@ -6,12 +6,12 @@ from flask import (Blueprint, request, render_template, flash,
                    url_for, redirect, session, jsonify, Response)
 from flask.ext.login import login_user, login_required, logout_user, current_user
 
-from flaskcities.users.forms import LoginForm
-from flaskcities.users.models import User
-from flaskcities.utils import is_auth, is_post_and_valid
-from flaskcities.sites.forms import NewSiteForm
-from flaskcities.sites.utils import update_temp_in_s3, make_s3_path_for_temp
-from flaskcities.sites.models import Site
+from stacksites.users.forms import LoginForm
+from stacksites.users.models import User
+from stacksites.utils import is_auth, is_post_and_valid
+from stacksites.sites.forms import NewSiteForm
+from stacksites.sites.utils import update_temp_in_s3, make_s3_path_for_temp
+from stacksites.sites.models import Site
 
 blueprint = Blueprint('public', __name__, static_folder="../static")
 
@@ -35,7 +35,7 @@ def home():
 def save_temp_file(temp_file_id):
     temp_file_id = temp_file_id
     file_data = request.json.get('data')
-    from flaskcities.sites.utils import upload_to_s3
+    from stacksites.sites.utils import upload_to_s3
     update_temp_in_s3(temp_file_id, file_data)
     return jsonify({'status': 'success'})
 

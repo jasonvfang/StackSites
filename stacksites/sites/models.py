@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
-from flaskcities.database import db, CRUDMixin
+from stacksites.database import db, CRUDMixin
 from .utils import upload_index_for_new_site, make_s3_path, get_files_data, delete_site_from_s3, transfer_landing_demo
 
 

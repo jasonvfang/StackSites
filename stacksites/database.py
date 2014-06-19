@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flaskcities.extensions import db
+from stacksites.extensions import db
 
 
 class CRUDMixin(object):

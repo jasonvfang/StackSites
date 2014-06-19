@@ -2,7 +2,7 @@
 from flask.ext.script import Manager, Shell, Server
 from flask.ext.migrate import MigrateCommand
 
-from flaskcities.app import create_app
+from stacksites.app import create_app
 
 app = create_app()
 manager = Manager(app)
