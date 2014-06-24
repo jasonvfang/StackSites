@@ -22,21 +22,22 @@ def home():
         return redirect(url_for('public.user_dashboard'))
     form = LoginForm()
 
-    if not session.get('temp_file_id'):
+    if session.get('temp_file_id') is None:
         session['create_new_temp_file'] = True
         session['temp_file_id'] = '%030x' % random.randrange(16**30)
-    else:
-        session['create_new_temp_file'] = ''
 
     return render_template('public/index.html', loginForm=form)
 
 
 @blueprint.route("/save_temp/<temp_file_id>", methods=['POST'])
 def save_temp_file(temp_file_id):
-    temp_file_id = temp_file_id
     file_data = request.json.get('data')
+
     from stacksites.sites.utils import upload_to_s3
     update_temp_in_s3(temp_file_id, file_data)
+
+    session['create_new_temp_file'] = ''
+
     return jsonify({'status': 'success'})
 
 
