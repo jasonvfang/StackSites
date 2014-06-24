@@ -2,4 +2,4 @@
 stacksites
 ===============================
 
-Learn web development with hands-on practice.
+Learn web development the easy way.
