@@ -23,6 +23,7 @@ class ProdConfig(Config):
     ENV = 'prod'
     DEBUG = False
     ASSETS_DEBUG = False
+    SERVER_NAME = 'stacksites.org:80'
 
 
 class DevConfig(Config):
@@ -31,3 +32,4 @@ class DevConfig(Config):
     DB_NAME = 'dev.db'
     DB_PATH = os.path.join(Config.PROJECT_ROOT, DB_NAME)
     ASSETS_DEBUG = True
+    SERVER_NAME = '127.0.0.1.xip.io:5000'

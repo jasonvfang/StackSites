@@ -3,17 +3,46 @@ import random
 import mimetypes
 import requests
 from flask import (Blueprint, request, render_template, flash,
-                   url_for, redirect, session, jsonify, Response)
+                   url_for, redirect, session, jsonify, Response, make_response, current_app, abort)
 from flask.ext.login import login_user, login_required, logout_user, current_user
 
 from stacksites.users.forms import LoginForm
 from stacksites.users.models import User
 from stacksites.utils import is_auth, is_post_and_valid
 from stacksites.sites.forms import NewSiteForm
-from stacksites.sites.utils import update_temp_in_s3, make_s3_path_for_temp
+from stacksites.sites.utils import update_temp_in_s3, make_s3_path_for_temp, make_s3_path
 from stacksites.sites.models import Site
 
 blueprint = Blueprint('public', __name__, static_folder="../static")
+
+
+@blueprint.route('/', methods=['GET'], subdomain='<username>', defaults={'filename': None})
+@blueprint.route('/<filename>', methods=['GET'], subdomain='<username>')
+def view_site_home(username, filename):
+
+    if filename is not None:
+        user = User.query.filter_by(username=username).first()
+
+        if '.' in filename:
+            ref = request.referrer.split('/')
+            site_name = ref[-1] or 'home'
+            site = [site for site in user.sites if site.name == site_name][0]
+            if current_app.debug:
+                return redirect(url_for('sites.view_file', username=username, site_id=site.id, filename=filename))
+            else:
+                return redirect(url_for('sites.view_file', username=username, site_id=site.id, filename=filename, _scheme='https', _external=True))
+        
+        else:
+            site = [site for site in user.sites if site.name == filename][0]
+            if site is not None:
+                target = make_s3_path(username, filename, 'index.html')
+                return make_response(requests.get(target).content)
+            else:
+                abort(400)
+
+    site_name = 'home'
+    target = make_s3_path(username, site_name, 'index.html')
+    return make_response(requests.get(target).content)
 
 
 @blueprint.route("/", methods=["GET"])
