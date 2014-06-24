@@ -21,7 +21,6 @@ def view_site(username, site_name):
     if '.' in site_name:
         from stacksites.users.models import User
         ref = request.referrer.split('/')
-        username = ref[-2]
         ref_site_name = ref[-1]
         user = User.query.filter_by(username=username).first()
         site = [site for site in user.sites if site.name == ref_site_name][0]
