@@ -14,9 +14,25 @@ def create_app():
     app = Flask(__name__)
     config_object = DevConfig if os.environ.get('DEBUG') == 'True' else ProdConfig
     app.config.from_object(config_object)
+
+    register_controllers()
+
     register_blueprints(app)
+
     register_extensions(app)
+
     return app
+
+
+def register_controllers():
+    from flask.ext.login import login_required
+
+    public.views.blueprint.add_url_rule('/', subdomain='<username>', view_func=public.views.view_site_home, methods=['GET'], defaults={'filename': None})
+    public.views.blueprint.add_url_rule('/<filename>', subdomain='<username>', view_func=public.views.view_site_home, methods=['GET'])
+    public.views.blueprint.add_url_rule("/", view_func=public.views.home, methods=["GET"])
+    public.views.blueprint.add_url_rule("/save_temp/<temp_file_id>", view_func=public.views.save_temp_file, methods=['POST'])
+    public.views.blueprint.add_url_rule('/view_temp/<temp_file_id>', view_func=public.views.view_temp_file)
+    public.views.blueprint.add_url_rule("/dash", methods=["GET", "POST"], view_func=login_required(public.views.user_dashboard))
 
 
 def register_extensions(app):

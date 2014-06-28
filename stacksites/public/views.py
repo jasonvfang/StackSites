@@ -16,8 +16,6 @@ from stacksites.sites.models import Site
 blueprint = Blueprint('public', __name__, static_folder="../static")
 
 
-@blueprint.route('/', methods=['GET'], subdomain='<username>', defaults={'filename': None})
-@blueprint.route('/<filename>', methods=['GET'], subdomain='<username>')
 def view_site_home(username, filename):
 
     if filename is not None:
@@ -57,7 +55,6 @@ def view_site_home(username, filename):
     return make_response(requests.get(target).content)
 
 
-@blueprint.route("/", methods=["GET"])
 def home():
     if is_auth():
         return redirect(url_for('public.user_dashboard'))
@@ -70,7 +67,6 @@ def home():
     return render_template('public/index.html', loginForm=form)
 
 
-@blueprint.route("/save_temp/<temp_file_id>", methods=['POST'])
 def save_temp_file(temp_file_id):
     file_data = request.json.get('data')
 
@@ -82,15 +78,12 @@ def save_temp_file(temp_file_id):
     return jsonify({'status': 'success'})
 
 
-@blueprint.route('/view_temp/<temp_file_id>')
 def view_temp_file(temp_file_id):
     s3_path = make_s3_path_for_temp(temp_file_id)
     mimetype = mimetypes.guess_type(s3_path)[0]
     return Response(response=requests.get(s3_path).content, mimetype=mimetype)
 
 
-@blueprint.route("/dash", methods=["GET", "POST"])
-@login_required
 def user_dashboard():
     form = NewSiteForm()
     if is_post_and_valid(form):
