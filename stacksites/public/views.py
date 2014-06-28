@@ -24,6 +24,10 @@ def view_site_home(username, filename):
         user = User.query.filter_by(username=username).first()
         
         if '.' in filename:
+            
+            if request.referrer is None:
+                abort(404)
+
             ref = request.referrer.split('/')
             site_name = ref[-1] or 'home'
             
