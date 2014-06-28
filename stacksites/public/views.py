@@ -26,19 +26,27 @@ def view_site_home(username, filename):
         if '.' in filename:
             ref = request.referrer.split('/')
             site_name = ref[-1] or 'home'
-            site = [site for site in user.sites if site.name == site_name][0]
+            
+            site = filter(lambda site: site.name == filename, user.sites)
+
+            if not site:
+                abort(404)
+            else:
+                site = sites[0]
+
             if current_app.debug:
                 return redirect(url_for('sites.view_file', username=username, site_id=site.id, filename=filename))
             else:
                 return redirect(url_for('sites.view_file', username=username, site_id=site.id, filename=filename, _scheme='https', _external=True))
         
         else:
-            site = [site for site in user.sites if site.name == filename][0]
-            if site is not None:
+            site = filter(lambda site: site.name == filename, user.sites)
+
+            if site:
                 target = make_s3_path(username, filename, 'index.html')
                 return make_response(requests.get(target).content)
             else:
-                abort(400)
+                abort(404)
 
     site_name = 'home'
     target = make_s3_path(username, site_name, 'index.html')
