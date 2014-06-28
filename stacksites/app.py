@@ -27,12 +27,31 @@ def create_app():
 def register_controllers():
     from flask.ext.login import login_required
 
-    public.views.blueprint.add_url_rule('/', subdomain='<username>', view_func=public.views.view_site_home, methods=['GET'], defaults={'filename': None})
-    public.views.blueprint.add_url_rule('/<filename>', subdomain='<username>', view_func=public.views.view_site_home, methods=['GET'])
-    public.views.blueprint.add_url_rule("/", view_func=public.views.home, methods=["GET"])
-    public.views.blueprint.add_url_rule("/save_temp/<temp_file_id>", view_func=public.views.save_temp_file, methods=['POST'])
-    public.views.blueprint.add_url_rule('/view_temp/<temp_file_id>', view_func=public.views.view_temp_file)
-    public.views.blueprint.add_url_rule("/dash", methods=["GET", "POST"], view_func=login_required(public.views.user_dashboard))
+    public_bp  = public.views.blueprint
+
+    public_bp.add_url_rule('/', subdomain='<username>', view_func=public.views.view_site_home, methods=['GET'], defaults={'filename': None})
+    public_bp.add_url_rule('/<filename>', subdomain='<username>', view_func=public.views.view_site_home, methods=['GET'])
+    public_bp.add_url_rule("/", view_func=public.views.home, methods=["GET"])
+    public_bp.add_url_rule("/save_temp/<temp_file_id>", view_func=public.views.save_temp_file, methods=['POST'])
+    public_bp.add_url_rule('/view_temp/<temp_file_id>', view_func=public.views.view_temp_file)
+    public_bp.add_url_rule("/dash", methods=["GET", "POST"], view_func=login_required(public.views.user_dashboard))
+
+    users_bp = users.views.blueprint
+
+    users_bp.add_url_rule('/settings', methods=['GET'], view_func=login_required(users.views.settings))
+    users_bp.add_url_rule('/change_email', methods=['POST'], view_func=login_required(users.views.change_email))
+    users_bp.add_url_rule('/change_password', methods=['POST'], view_func=login_required(users.views.change_password))
+    users_bp.add_url_rule('/login', methods=['POST'], view_func=users.views.login)
+    users_bp.add_url_rule('/logout', methods=['POST'], view_func=login_required(users.views.logout))
+    users_bp.add_url_rule('/register', methods=['GET', 'POST'], view_func=users.views.register)
+    users_bp.add_url_rule('/activate/<token>', methods=['GET'], view_func=users.views.activate)
+    users_bp.add_url_rule('/login_help', methods=['GET'], view_func=users.views.login_help)
+    users_bp.add_url_rule('/resend', methods=['POST'], view_func=users.views.resend)
+    users_bp.add_url_rule('/send_reset', methods=['POST'], view_func=users.views.send_password_reset)
+    users_bp.add_url_rule('/reset/<token>', methods=['GET', 'POST'], view_func=users.views.reset_password)
+
+
+
 
 
 def register_extensions(app):

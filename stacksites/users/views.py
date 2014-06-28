@@ -15,7 +15,6 @@ from stacksites.users.models import User
 blueprint = Blueprint('users', __name__, url_prefix='/users', static_folder="../static")
 
 
-@blueprint.route('/settings', methods=['GET'])
 def settings(emailForm=None, passwordForm=None):
     if emailForm is None:
         emailForm = ChangeEmailForm()
@@ -25,7 +24,6 @@ def settings(emailForm=None, passwordForm=None):
                            passwordForm=passwordForm)
 
 
-@blueprint.route('/change_email', methods=['POST'])
 def change_email():
     form = ChangeEmailForm()
     if form.validate_on_submit():
@@ -37,7 +35,6 @@ def change_email():
     return settings(emailForm=form)
 
 
-@blueprint.route('/change_password', methods=['POST'])
 def change_password():
     form = ChangePasswordForm()
     if form.validate_on_submit():
@@ -48,7 +45,6 @@ def change_password():
     return settings(passwordForm=form)
 
 
-@blueprint.route("/login", methods=["POST"])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -60,14 +56,11 @@ def login():
         return redirect(url_for('public.home'))
 
 
-@blueprint.route("/logout", methods=["POST"])
-@login_required
 def logout():
     logout_user()
     return redirect(url_for('public.home'))
 
 
-@blueprint.route("/register", methods=["GET", "POST"])
 def register():
     form = RegisterForm()
     if current_user and current_user.is_authenticated():
@@ -88,7 +81,6 @@ def register():
     return render_template('users/register.html', form=form)
 
 
-@blueprint.route("/activate/<token>")
 def activate(token):
     user = User.query.filter_by(activation_token=token).first()
     if user is None:
@@ -101,7 +93,6 @@ def activate(token):
     return redirect(url_for('public.home'))
 
 
-@blueprint.route("/login_help", methods=["GET"])
 def login_help(resendForm=None, passwordForm=None):
     if not resendForm:
         resendForm = ResendConfirmationForm()
@@ -112,7 +103,6 @@ def login_help(resendForm=None, passwordForm=None):
                            resendForm=resendForm, passwordForm=passwordForm)
 
 
-@blueprint.route("/resend", methods=["POST"])
 def resend():
     resendForm = ResendConfirmationForm()
     if resendForm.validate_on_submit():
@@ -124,7 +114,6 @@ def resend():
         return login_help(resendForm=resendForm)
 
 
-@blueprint.route("/send_reset", methods=["POST"])
 def send_password_reset():
     passwordForm = ForgotPasswordForm()
     if passwordForm.validate_on_submit():
@@ -135,7 +124,6 @@ def send_password_reset():
         return login_help(passwordForm=passwordForm)
 
 
-@blueprint.route("/reset/<token>", methods=["GET", "POST"])
 def reset_password(token):
     if not current_user.is_anonymous():
         flash('You cannot reset your password if you are already logged in.', 'info')
