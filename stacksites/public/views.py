@@ -22,17 +22,17 @@ def view_site_home(username, filename):
 
     if filename is not None:
         user = User.query.filter_by(username=username).first()
-
+        
         if '.' in filename:
             ref = request.referrer.split('/')
             site_name = ref[-1] or 'home'
             
-            site = filter(lambda site: site.name == filename, user.sites)
+            site = filter(lambda site: site.name == site_name, user.sites)
 
             if not site:
                 abort(404)
             else:
-                site = sites[0]
+                site = site[0]
 
             if current_app.debug:
                 return redirect(url_for('sites.view_file', username=username, site_id=site.id, filename=filename))
