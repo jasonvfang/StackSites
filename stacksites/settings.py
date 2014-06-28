@@ -23,7 +23,7 @@ class ProdConfig(Config):
     ENV = 'prod'
     DEBUG = False
     ASSETS_DEBUG = False
-    SERVER_NAME = 'stacksites.org:80'
+    SERVER_NAME = 'stacksites.org'
 
 
 class DevConfig(Config):
