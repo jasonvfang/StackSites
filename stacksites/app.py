@@ -29,8 +29,9 @@ def register_controllers():
 
     public_bp  = public.views.blueprint
 
-    public_bp.add_url_rule('/', subdomain='<username>', view_func=public.views.view_site_home, methods=['GET'], defaults={'filename': None})
-    public_bp.add_url_rule('/<filename>', subdomain='<username>', view_func=public.views.view_site_home, methods=['GET'])
+    public_bp.add_url_rule('/', subdomain='<username>', view_func=public.views.view_site_home, methods=['GET'], defaults={'path': None})
+    public_bp.add_url_rule('/<path>', subdomain='<username>', view_func=public.views.view_site_home, methods=['GET'])
+    public_bp.add_url_rule('/<path:path>', subdomain='<username>', view_func=public.views.view_file_in_folder)
     public_bp.add_url_rule("/", view_func=public.views.home, methods=["GET"])
     public_bp.add_url_rule("/save_temp/<temp_file_id>", view_func=public.views.save_temp_file, methods=['POST'])
     public_bp.add_url_rule('/view_temp/<temp_file_id>', view_func=public.views.view_temp_file)
@@ -57,7 +58,7 @@ def register_controllers():
     sites_bp.add_url_rule('/upload/<int:site_id>', methods=['POST'], view_func=login_required(sites.views.upload))
     sites_bp.add_url_rule('/edit/<int:site_id>/<filename>', view_func=login_required(sites.views.edit_file))
     sites_bp.add_url_rule('/save/<int:site_id>', methods=['POST'], view_func=login_required(sites.views.save_file))
-    sites_bp.add_url_rule('/view/<username>/<int:site_id>/<filename>', view_func=sites.views.view_file)
+    sites_bp.add_url_rule('/view/<username>/<int:site_id>/<path:path>', view_func=sites.views.view_file)
     sites_bp.add_url_rule('/delete/<int:site_id>/<filename>', methods=['POST'], view_func=login_required(sites.views.delete_file))
     sites_bp.add_url_rule('/delete_site/<int:site_id>', methods=['POST'], view_func=login_required(sites.views.delete_site))
 

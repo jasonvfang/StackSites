@@ -16,12 +16,33 @@ from stacksites.sites.models import Site
 blueprint = Blueprint('public', __name__, static_folder="../static")
 
 
-def view_site_home(username, filename):
+def view_file_in_folder(username, path):
+    if not '.' in path:
+        abort(404)
 
-    if filename is not None:
+    user = User.query.filter_by(username=username).first()
+
+    ref_list = request.referrer.split('/')
+    site_name = ref_list[-1]
+    site = filter(lambda site: site.name == site_name, user.sites)
+    if not site:
+        abort(404)
+    else:
+        site = site[0]
+
+    if current_app.debug:
+        return redirect(url_for('sites.view_file', username=username, site_id=site.id, path=path))
+    else:
+        return redirect(url_for('sites.view_file', username=username, site_id=site.id, path=path, _scheme='https', _external=True))
+
+
+
+def view_site_home(username, path):
+
+    if path is not None:
         user = User.query.filter_by(username=username).first()
         
-        if '.' in filename:
+        if '.' in path:
             
             if request.referrer is None:
                 abort(404)
@@ -37,15 +58,16 @@ def view_site_home(username, filename):
                 site = site[0]
 
             if current_app.debug:
-                return redirect(url_for('sites.view_file', username=username, site_id=site.id, filename=filename))
+                return redirect(url_for('sites.view_file', username=username, site_id=site.id, path=path))
             else:
-                return redirect(url_for('sites.view_file', username=username, site_id=site.id, filename=filename, _scheme='https', _external=True))
+                return redirect(url_for('sites.view_file', username=username, site_id=site.id, path=path, _scheme='https', _external=True))
         
         else:
-            site = filter(lambda site: site.name == filename, user.sites)
+            # assume the path refers to site name
+            site = filter(lambda site: site.name == path, user.sites)
 
             if site:
-                target = make_s3_path(username, filename, 'index.html')
+                target = make_s3_path(username, path, 'index.html')
                 return make_response(requests.get(target).content)
             else:
                 abort(404)

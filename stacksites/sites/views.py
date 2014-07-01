@@ -24,9 +24,9 @@ def view_site(username, site_name):
         user = User.query.filter_by(username=username).first()
         site = [site for site in user.sites if site.name == ref_site_name][0]
         if not current_app.debug:
-            return redirect(url_for('sites.view_file', username=username, site_id=site.id, filename=site_name, _scheme='https', _external=True))
+            return redirect(url_for('sites.view_file', username=username, site_id=site.id, path=site_name, _scheme='https', _external=True))
         else:
-            return redirect(url_for('sites.view_file', username=username, site_id=site.id, filename=site_name))
+            return redirect(url_for('sites.view_file', username=username, site_id=site.id, path=site_name))
     target = make_s3_path(username, site_name, 'index.html')
     return make_response(r.get(target).text)
 
@@ -76,10 +76,10 @@ def save_file(site_id):
         return jsonify({'status': 'error', 'error': str(e)})
 
 
-def view_file(username, site_id, filename):
+def view_file(username, site_id, path):
     site = Site.get_by_id(site_id)
-    s3_path = make_s3_path(username, site.name, filename)
-    mimetype = mimetypes.guess_type(filename)[0]
+    s3_path = make_s3_path(username, site.name, path)
+    mimetype = mimetypes.guess_type(path)[0]
     return Response(response=r.get(s3_path).content, mimetype=mimetype)
 
 
