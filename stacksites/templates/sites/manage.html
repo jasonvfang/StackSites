@@ -13,10 +13,12 @@
         </tr>
       </thead>
       <tbody>
-        {% for file in site.get_files() %}
+        {% for file in site.get_files(folder) %}
         <tr>
           {% if file['ext'] in image_exts %}
           <td>{{file['name']}}</td>
+          {% elif file['is_folder'] %}
+          <td><a href="{{ url_for('sites.manage_site_folder', site_id=site.id, folder=file['name']) }}">{{ file['name'] }}</a></td>
           {% else %}
           <td><a href="{{ url_for('sites.edit_file', site_id=site.id, filename=file['name']) }}">{{file['name']}}</a></td>
           {% endif %}

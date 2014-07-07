@@ -31,14 +31,22 @@ def get_file_ext(filename):
     return os.path.splitext(filename)[1].replace('.', '') or None
 
 
-def get_keys(username, site_name):
+def get_keys(username, site_name, folder=None):
     bucket = get_bucket()
-    return bucket.list(prefix="{0}/{1}".format(username, site_name))
+    prefix = "{0}/{1}".format(username, site_name)
+
+    if folder is not None:
+        prefix = '{}/{}'.format(prefix, folder)
+        keys = bucket.list(prefix=prefix)
+        # the specified prefix is included as a key for some reason (which we don't want)
+        return [key for key in keys if key.name.split('/')[-1]]
+
+    return bucket.list(prefix=prefix)
 
 
-def get_files_data(username, site_name):
+def get_files_data(username, site_name, folder=None):
     bucket = get_bucket()
-    keys = get_keys(username, site_name)
+    keys = get_keys(username, site_name, folder=folder)
 
     files = []
 
@@ -120,5 +128,8 @@ def delete_s3_file(username, site_name, filename):
 
 
 def owns_site(site):
+    if site is None:
+        abort(404)
+
     if current_user != site.user:
         abort(403)

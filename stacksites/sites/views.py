@@ -34,13 +34,18 @@ def view_site(username, site_name):
 def manage_site(site_id, form=None):
     site = Site.get_by_id(site_id)
     owns_site(site)
-    if site is None:
-        flash('That site does not exist', 'danger')
-        return redirect(url_for('public.user_dashboard'))
+
     if form is None:
         form = UploadFilesForm()
+
     return render_template('sites/manage.html', site=site, form=form, image_exts=IMAGE_EXTS)
 
+
+def manage_site_folder(site_id, folder):
+    site = Site.get_by_id(site_id)
+    owns_site(site)
+
+    return render_template('sites/manage.html', site=site, form=UploadFilesForm(), image_exts=IMAGE_EXTS, folder=folder)
 
 def upload(site_id):
     site = Site.get_by_id(site_id)

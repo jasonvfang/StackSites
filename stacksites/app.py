@@ -54,7 +54,8 @@ def register_controllers():
     sites_bp = sites.views.blueprint
 
     sites_bp.add_url_rule('/<username>/<site_name>', view_func=sites.views.view_site)
-    sites_bp.add_url_rule('/manage/<int:site_id>', methods=['GET'], view_func=login_required(sites.views.manage_site))
+    sites_bp.add_url_rule('/manage/<int:site_id>', view_func=login_required(sites.views.manage_site))
+    sites_bp.add_url_rule('/manage/<int:site_id>/<folder>', view_func=login_required(sites.views.manage_site_folder))
     sites_bp.add_url_rule('/upload/<int:site_id>', methods=['POST'], view_func=login_required(sites.views.upload))
     sites_bp.add_url_rule('/edit/<int:site_id>/<filename>', view_func=login_required(sites.views.edit_file))
     sites_bp.add_url_rule('/save/<int:site_id>', methods=['POST'], view_func=login_required(sites.views.save_file))
