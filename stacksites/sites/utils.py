@@ -1,3 +1,4 @@
+import os
 import boto
 import ntpath
 import mimetypes
@@ -27,7 +28,7 @@ def get_fname_from_path(path):
 
 
 def get_file_ext(filename):
-    return filename.split('.')[-1]
+    return os.path.splitext(filename)[1].replace('.', '') or None
 
 
 def get_keys(username, site_name):
@@ -38,7 +39,21 @@ def get_keys(username, site_name):
 def get_files_data(username, site_name):
     bucket = get_bucket()
     keys = get_keys(username, site_name)
-    return [{'name': get_fname_from_path(key.name), 'size': key.size, 'ext': get_file_ext(get_fname_from_path(key.name))} for key in keys]
+
+    files = []
+
+    for key in keys:
+
+        key_data = {
+            'name': get_fname_from_path(key.name),
+            'size': key.size,
+            'ext': get_file_ext(key.name),
+            'is_folder': key.name[-1] == '/'
+        }
+
+        files.append(key_data)
+
+    return files
 
 
 def delete_site_from_s3(username, site_name):
