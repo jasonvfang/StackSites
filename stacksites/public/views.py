@@ -22,6 +22,9 @@ def view_file_in_folder(username, path):
 
     user = User.query.filter_by(username=username).first()
 
+    if not request.referrer:
+        abort(404)
+
     ref_list = request.referrer.split('/')
     site_name = ref_list[-1]
     site = filter(lambda site: site.name == site_name, user.sites)
