@@ -27,8 +27,8 @@ class Site(CRUDMixin, db.Model):
         self.updated_at = datetime.utcnow()
         self.save()
 
-    def get_files(self, folder=None):
-        return get_files_data(self.user.username, self.name, folder)
+    def get_files(self, folder_prefix=None):
+        return get_files_data(self.user.username, self.name, folder_prefix)
 
     def delete_site(self):
         delete_site_from_s3(self.user.username, self.name)

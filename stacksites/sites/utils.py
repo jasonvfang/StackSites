@@ -31,22 +31,21 @@ def get_file_ext(filename):
     return os.path.splitext(filename)[1].replace('.', '') or None
 
 
-def get_keys(username, site_name, folder=None):
+def get_keys(username, site_name, folder_prefix=None):
     bucket = get_bucket()
     prefix = "{0}/{1}".format(username, site_name)
 
-    if folder is not None:
-        prefix = '{}/{}'.format(prefix, folder)
-        keys = bucket.list(prefix=prefix)
-        # the specified prefix is included as a key for some reason (which we don't want)
-        return [key for key in keys if key.name.split('/')[-1]]
+    if folder_prefix is not None:
+        keys = bucket.list(prefix=folder_prefix)
+        return [key for key in keys if key.name != folder_prefix]
 
-    return bucket.list(prefix=prefix)
+    keys = bucket.list(prefix=prefix)
+    return [key for key in keys if len(key.name.split('/')) <= 4]
 
 
-def get_files_data(username, site_name, folder=None):
+def get_files_data(username, site_name, folder_prefix=None):
     bucket = get_bucket()
-    keys = get_keys(username, site_name, folder=folder)
+    keys = get_keys(username, site_name, folder_prefix=folder_prefix)
 
     files = []
 
@@ -56,7 +55,8 @@ def get_files_data(username, site_name, folder=None):
             'name': get_fname_from_path(key.name),
             'size': key.size,
             'ext': get_file_ext(key.name),
-            'is_folder': key.name[-1] == '/'
+            'is_folder': key.name[-1] == '/',
+            'key': key.name
         }
 
         files.append(key_data)

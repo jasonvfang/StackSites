@@ -38,14 +38,15 @@ def manage_site(site_id, form=None):
     if form is None:
         form = UploadFilesForm()
 
-    return render_template('sites/manage.html', site=site, form=form, image_exts=IMAGE_EXTS)
+    return render_template('sites/manage.html', site=site, form=form, image_exts=IMAGE_EXTS, folder_prefix=None)
 
 
-def manage_site_folder(site_id, folder):
+def manage_site_folder(site_id, folder_prefix):
     site = Site.get_by_id(site_id)
     owns_site(site)
 
-    return render_template('sites/manage.html', site=site, form=UploadFilesForm(), image_exts=IMAGE_EXTS, folder=folder)
+    return render_template('sites/manage.html', site=site, form=UploadFilesForm(), image_exts=IMAGE_EXTS, folder_prefix=folder_prefix)
+
 
 def upload(site_id):
     site = Site.get_by_id(site_id)
