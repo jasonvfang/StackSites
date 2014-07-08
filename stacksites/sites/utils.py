@@ -81,15 +81,20 @@ def upload_to_s3(file_obj, username, site_name, filename=None, set_contents_from
     if not filename:
         filename = werkzeug.secure_filename(file_obj.filename)
     mimetype = mimetypes.guess_type(filename)[0]
-    filename = '{0}/{1}/{2}'.format(username, site_name, filename)
+
+    if '/' not in filename:
+        filename = '{0}/{1}/{2}'.format(username, site_name, filename)
+
     bucket = get_bucket()
     key = bucket.new_key(filename)
     key.set_metadata('Content-Type', mimetype)
+
     if not set_contents_from_str:
         file_obj.seek(0)
         key.set_contents_from_file(file_obj)
     else:
         key.set_contents_from_string(file_obj)
+
     key.set_acl('public-read')
 
 
@@ -118,7 +123,11 @@ def make_s3_path_for_temp(temp_file_id):
 def make_s3_path(username, site_name, key):
     """Creates a string combining the standard S3 URL and a filename to make a valid link."""
     protocol = 'http' if current_app.config['DEBUG'] else 'https'
-    s3_path = "{0}://s3.amazonaws.com/{1}/{2}".format(protocol, current_app.config['BUCKET_NAME'], key)
+    if '/' in key:
+        s3_path = "{0}://s3.amazonaws.com/{1}/{2}".format(protocol, current_app.config['BUCKET_NAME'], key)
+    else:
+        s3_path = "{0}://s3.amazonaws.com/{1}/{2}/{3}/{4}".format(protocol, current_app.config['BUCKET_NAME'], username, site_name, key)
+
     return s3_path
 
 

@@ -17,6 +17,7 @@ blueprint = Blueprint('public', __name__, static_folder="../static")
 
 
 def view_file_in_folder(username, path):
+
     if not '.' in path:
         abort(404)
 
@@ -33,10 +34,13 @@ def view_file_in_folder(username, path):
     else:
         site = site[0]
 
+    if '/' in path:
+        path = '{}/{}/{}'.format(username, site_name, path)
+
     if current_app.debug:
-        return redirect(url_for('sites.view_file', username=username, site_id=site.id, path=path))
+        return redirect(url_for('sites.view_file', username=username, site_id=site.id, key=path))
     else:
-        return redirect(url_for('sites.view_file', username=username, site_id=site.id, path=path, _scheme='https', _external=True))
+        return redirect(url_for('sites.view_file', username=username, site_id=site.id, key=path, _scheme='https', _external=True))
 
 
 
@@ -61,9 +65,9 @@ def view_site_home(username, path):
                 site = site[0]
 
             if current_app.debug:
-                return redirect(url_for('sites.view_file', username=username, site_id=site.id, path=path))
+                return redirect(url_for('sites.view_file', username=username, site_id=site.id, key=path))
             else:
-                return redirect(url_for('sites.view_file', username=username, site_id=site.id, path=path, _scheme='https', _external=True))
+                return redirect(url_for('sites.view_file', username=username, site_id=site.id, key=path, _scheme='https', _external=True))
         
         else:
             # assume the path refers to site name
