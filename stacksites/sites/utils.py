@@ -40,7 +40,8 @@ def get_keys(username, site_name, folder_prefix=None):
         return [key for key in keys if key.name != folder_prefix]
 
     keys = bucket.list(prefix=prefix)
-    return [key for key in keys if len(key.name.split('/')) <= 4]
+    # if no folder_prefix, then return all the keys in the current folder
+    return [key for key in keys if len(key.name.split('/')) < 4 or not key.name.split('/')[3]]
 
 
 def get_files_data(username, site_name, folder_prefix=None):
@@ -114,11 +115,11 @@ def make_s3_path_for_temp(temp_file_id):
     return s3_path
 
 
-def make_s3_path(username, site_name, filename):
+def make_s3_path(username, site_name, key):
     """Creates a string combining the standard S3 URL and a filename to make a valid link."""
     protocol = 'http' if current_app.config['DEBUG'] else 'https'
-    s3_path = "{0}://s3.amazonaws.com/{1}/{2}/{3}/".format(protocol, current_app.config['BUCKET_NAME'], username, site_name)
-    return urljoin(s3_path, filename)
+    s3_path = "{0}://s3.amazonaws.com/{1}/{2}".format(protocol, current_app.config['BUCKET_NAME'], key)
+    return s3_path
 
 
 def delete_s3_file(username, site_name, filename):

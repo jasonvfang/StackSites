@@ -20,7 +20,7 @@
           {% elif file['is_folder'] %}
           <td><a href="{{ url_for('sites.manage_site_folder', site_id=site.id, folder_prefix=file['key']) }}">{{ file['name'] }}</a></td>
           {% else %}
-          <td><a href="{{ url_for('sites.edit_file', site_id=site.id, filename=file['name']) }}">{{file['name']}}</a></td>
+          <td><a href="{{ url_for('sites.edit_file', site_id=site.id, key=file['key']) }}">{{ file['name'] }}</a></td>
           {% endif %}
           <td>{{ file['size']|filesizeformat }}</td>
           <td><button class='btn btn-danger fileDelete' file-name={{file['name']}} type="button" delete-target="{{ url_for('sites.delete_file', site_id=site.id, filename=file['name']) }}">Delete</button></td>

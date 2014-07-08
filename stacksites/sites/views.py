@@ -62,11 +62,11 @@ def upload(site_id):
         return manage_site(site_id, form)
 
 
-def edit_file(site_id, filename):
+def edit_file(site_id, key):
     site = Site.get_by_id(site_id)
     owns_site(site)
-    s3_path = make_s3_path(current_user.username, site.name, filename)
-    return render_template('sites/edit.html', s3_path=s3_path, filename=filename, site=site)
+    s3_path = make_s3_path(current_user.username, site.name, key)
+    return render_template('sites/edit.html', s3_path=s3_path, key=key, site=site)
 
 
 def save_file(site_id):
@@ -82,10 +82,10 @@ def save_file(site_id):
         return jsonify({'status': 'error', 'error': str(e)})
 
 
-def view_file(username, site_id, path):
+def view_file(username, site_id, key):
     site = Site.get_by_id(site_id)
-    s3_path = make_s3_path(username, site.name, path)
-    mimetype = mimetypes.guess_type(path)[0]
+    s3_path = make_s3_path(username, site.name, key)
+    mimetype = mimetypes.guess_type(key)[0]
     return Response(response=r.get(s3_path).content, mimetype=mimetype)
 
 
