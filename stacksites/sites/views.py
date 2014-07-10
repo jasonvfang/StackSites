@@ -44,8 +44,9 @@ def manage_site(site_id, form=None):
 def manage_site_folder(site_id, folder_prefix):
     site = Site.get_by_id(site_id)
     owns_site(site)
-
-    return render_template('sites/manage.html', site=site, form=UploadFilesForm(), image_exts=IMAGE_EXTS, folder_prefix=folder_prefix)
+    path_elems = [e for e in folder_prefix.split('/') if e]
+    paths = [{elem: '/'.join(path_elems[:ind + 1])} for ind, elem in enumerate(path_elems)]
+    return render_template('sites/manage.html', site=site, form=UploadFilesForm(), image_exts=IMAGE_EXTS, folder_prefix=folder_prefix, paths=paths[2:])
 
 
 def upload(site_id):

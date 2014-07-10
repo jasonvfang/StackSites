@@ -3,7 +3,16 @@
 {% block content %}
 <div class='row'>
   <div class='col-lg-6'>
-    <h4>Manage Files for <strong>{{ site.name }}</strong></h4>
+    <ol class='breadcrumb'>
+      <li><a href="{{ url_for('sites.manage_site', site_id=site.id) }}">{{ site.name }}</a></li>
+      {% if folder_prefix %}
+        {% for path_info in paths %}
+          {% for elem, path in path_info.iteritems() %}
+          <li><a href="{{ url_for('sites.manage_site_folder', site_id=site.id, folder_prefix=path) }}/">{{ elem }}</a></li>
+          {% endfor %}
+        {% endfor %}
+      {% endif %}
+    </ol>
     <table class='table table-striped'>
       <thead>
         <tr>
