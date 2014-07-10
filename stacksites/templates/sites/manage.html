@@ -18,7 +18,7 @@
           {% if file['ext'] in image_exts %}
           <td>{{file['name']}}</td>
           {% elif file['is_folder'] %}
-          <td><a href="{{ url_for('sites.manage_site_folder', site_id=site.id, folder_prefix=file['key']) }}">{{ file['name'] }}</a></td>
+          <td><i class="fa fa-folder"></i> <a href="{{ url_for('sites.manage_site_folder', site_id=site.id, folder_prefix=file['key']) }}">{{ file['name'] }}</a></td>
           {% else %}
           <td><a href="{{ url_for('sites.edit_file', site_id=site.id, key=file['key']) }}">{{ file['name'] }}</a></td>
           {% endif %}
