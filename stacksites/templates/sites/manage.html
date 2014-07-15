@@ -40,7 +40,11 @@
   </div>
   <div class='col-lg-6'>
     <h3>Upload Files</h3>
+    {% if folder_prefix %}
+    <form role='form' id='uploadForm' method='post' action="{{ url_for('sites.upload_in_folder', site_id=site.id, folder_prefix=folder_prefix) }}" enctype='multipart/form-data'>
+    {% else %}
     <form role='form' id='uploadForm' method='post' action="{{ url_for('sites.upload', site_id=site.id) }}" enctype='multipart/form-data'>
+    {% endif %}
       {{ form.hidden_tag() }}
       <div class='form-group'>
         <label>Upload only web-related files.</label>

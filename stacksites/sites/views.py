@@ -52,12 +52,32 @@ def upload(site_id):
     site = Site.get_by_id(site_id)
     owns_site(site)
     form = UploadFilesForm()
+
     if form.validate_on_submit():
         files = request.files.getlist('files')
+
         for file in files:
             filename = secure_filename(file.filename)
             upload_to_s3(file, current_user.username, site.name, filename)
+        
         return redirect(url_for('sites.manage_site', site_id=site_id))
+    else:
+        return manage_site(site_id, form)
+
+
+def upload_in_folder(site_id, folder_prefix):
+    site = Site.get_by_id(site_id)
+    owns_site(site)
+    form = UploadFilesForm()
+
+    if form.validate_on_submit():
+        files = request.files.getlist('files')
+
+        for file in files:
+            filename = folder_prefix + secure_filename(file.filename)
+            upload_to_s3(file, current_user.username, site.name, filename)
+
+        return redirect(url_for('sites.manage_site_folder', site_id=site_id, folder_prefix=folder_prefix))
     else:
         return manage_site(site_id, form)
 
