@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import ipdb
 import requests as r
 import mimetypes
 from werkzeug import secure_filename
@@ -90,11 +89,13 @@ def view_file(username, site_id, key):
     return Response(response=r.get(s3_path).content, mimetype=mimetype)
 
 
-def delete_file(site_id, filename):
+def delete_file(site_id, key):
     site = Site.get_by_id(site_id)
     owns_site(site)
-    delete_s3_file(site.user.username, site.name, filename)
-    return redirect(url_for('sites.manage_site', site_id=site_id))
+    delete_s3_file(site.user.username, site.name, key)
+
+    folder_prefix = '/'.join(key.split('/')[:-1]) + '/'
+    return redirect(url_for('sites.manage_site_folder', site_id=site_id, folder_prefix=folder_prefix))
 
 
 def delete_site(site_id):

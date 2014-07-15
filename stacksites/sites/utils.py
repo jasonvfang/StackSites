@@ -131,9 +131,9 @@ def make_s3_path(username, site_name, key):
     return s3_path
 
 
-def delete_s3_file(username, site_name, filename):
+def delete_s3_file(username, site_name, key):
     bucket = get_bucket()
-    key = bucket.lookup('{0}/{1}/{2}'.format(username, site_name, filename))
+    key = bucket.lookup('/{}'.format(key))
     key.delete()
 
 
