@@ -12,7 +12,7 @@
   </div>
   <div class='col-lg-4'>
     <div class='btn-group'>
-      <a class='btn btn-default' href="{{ url_for('sites.view_file', username=site.user.username, site_id=site.id, key=key) }}" target='_blank'>View {{ key }}</a>
+      <a class='btn btn-default' href="{{ url_for('sites.view_file', username=site.user.username, site_id=site.id, key=key) }}" target='_blank'>View {{ fname }}</a>
       <a class='btn btn-primary' href="{{ url_for('public.view_site_home', username=current_user.username, path=site.name) }}" target='_blank'>View Site</a>
       <a class='btn btn-info' href="{{ url_for('sites.manage_site', site_id=site.id) }}"><i class="fa fa-long-arrow-left"></i> Back to Site</a>
     </div>

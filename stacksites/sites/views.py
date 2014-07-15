@@ -67,7 +67,7 @@ def edit_file(site_id, key):
     site = Site.get_by_id(site_id)
     owns_site(site)
     s3_path = make_s3_path(current_user.username, site.name, key)
-    return render_template('sites/edit.html', s3_path=s3_path, key=key, site=site)
+    return render_template('sites/edit.html', s3_path=s3_path, key=key, site=site, fname=key.split('/')[-1])
 
 
 def save_file(site_id):
