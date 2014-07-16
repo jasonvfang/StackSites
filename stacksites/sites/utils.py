@@ -37,7 +37,13 @@ def get_keys(username, site_name, folder_prefix=None):
 
     if folder_prefix is not None:
         keys = bucket.list(prefix=folder_prefix)
-        return [key for key in keys if key.name != folder_prefix]
+        max_slashes = folder_prefix.count('/')
+        keys_in_folder = []
+        for key in keys:
+            last_slash = key.name.rfind('/')
+            if key.name != folder_prefix and (key.name.count('/') == max_slashes or key.name[last_slash:] == '/'):
+                keys_in_folder.append(key)
+        return keys_in_folder
 
     keys = bucket.list(prefix=prefix)
     # if no folder_prefix, then return all the keys in the current folder
