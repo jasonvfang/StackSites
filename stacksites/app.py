@@ -62,6 +62,7 @@ def register_controllers():
     sites_bp.add_url_rule('/save/<int:site_id>', methods=['POST'], view_func=login_required(sites.views.save_file))
     sites_bp.add_url_rule('/view/<username>/<int:site_id>/<path:key>', view_func=sites.views.view_file)
     sites_bp.add_url_rule('/delete/<int:site_id>/<path:key>', methods=['POST'], view_func=login_required(sites.views.delete_file))
+    sites_bp.add_url_rule('/delete_folder/<int:site_id>/<path:key>', methods=['POST'], view_func=login_required(sites.views.delete_folder))
     sites_bp.add_url_rule('/delete_site/<int:site_id>', methods=['POST'], view_func=login_required(sites.views.delete_site))
 
 

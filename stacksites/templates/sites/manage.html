@@ -32,7 +32,11 @@
           <td><a href="{{ url_for('sites.edit_file', site_id=site.id, key=file['key']) }}">{{ file['name'] }}</a></td>
           {% endif %}
           <td>{{ file['size']|filesizeformat }}</td>
+          {% if file['is_folder'] %}
+          <td><button class='btn btn-danger fileDelete' file-name={{file['key']}} type="button" delete-target="{{ url_for('sites.delete_folder', site_id=site.id, key=file['key']) }}">Delete</button></td>
+          {% else %}
           <td><button class='btn btn-danger fileDelete' file-name={{file['key']}} type="button" delete-target="{{ url_for('sites.delete_file', site_id=site.id, key=file['key']) }}">Delete</button></td>
+          {% endif %}
         </tr>
         {% endfor %}
       </tbody>

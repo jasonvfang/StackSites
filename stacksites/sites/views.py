@@ -7,7 +7,7 @@ from flask import Response, Blueprint, render_template, url_for, redirect, make_
 
 from .forms import NewSiteForm, UploadFilesForm
 from .models import Site
-from .utils import upload_to_s3, make_s3_path, owns_site, delete_s3_file
+from .utils import upload_to_s3, make_s3_path, owns_site, delete_s3_file, get_keys
 from stacksites.utils import flash_errors
 
 IMAGE_EXTS = ['jpg', 'png', 'svg', 'gif', 'bmp', 'webp']
@@ -59,8 +59,8 @@ def upload(site_id):
         for file in files:
             filename = secure_filename(file.filename)
             upload_to_s3(file, current_user.username, site.name, filename)
-        
         return redirect(url_for('sites.manage_site', site_id=site_id))
+
     else:
         return manage_site(site_id, form)
 
@@ -76,8 +76,8 @@ def upload_in_folder(site_id, folder_prefix):
         for file in files:
             filename = folder_prefix + secure_filename(file.filename)
             upload_to_s3(file, current_user.username, site.name, filename)
-
         return redirect(url_for('sites.manage_site_folder', site_id=site_id, folder_prefix=folder_prefix))
+
     else:
         return manage_site(site_id, form)
 
@@ -115,6 +115,29 @@ def delete_file(site_id, key):
     delete_s3_file(site.user.username, site.name, key)
 
     folder_prefix = '/'.join(key.split('/')[:-1]) + '/'
+    return redirect(url_for('sites.manage_site_folder', site_id=site_id, folder_prefix=folder_prefix))
+
+
+def _delete_folder(username, site_name, key):
+    for file_key in get_keys(username, site_name, key):
+        if file_key.name[-1] == '/':
+            _delete_folder(username, site_name, file_key.name)
+        else:
+            delete_s3_file(username, site_name, file_key.name)
+
+    delete_s3_file(username, site_name, key)
+
+
+def delete_folder(site_id, key):
+    site = Site.get_by_id(site_id)
+    owns_site(site)
+
+    username = site.user.username
+    site_name = site.name
+
+    _delete_folder(username, site_name, key)
+
+    folder_prefix = '/'.join(key.split('/')[:-2]) + '/'
     return redirect(url_for('sites.manage_site_folder', site_id=site_id, folder_prefix=folder_prefix))
 
 
