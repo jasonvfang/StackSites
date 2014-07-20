@@ -150,6 +150,13 @@ def create_folder_in_s3(username, site_name, folder_name, folder_key):
     key.set_acl('public-read')
 
 
+def create_file_in_s3(username, site_name, filename, folder_key):
+    bucket = get_bucket()
+    key = bucket.new_key('{}/{}'.format(folder_key, filename))
+    key.set_contents_from_string('')
+    key.set_acl('public-read')
+
+
 def owns_site(site):
     if site is None:
         abort(404)

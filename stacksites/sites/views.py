@@ -5,9 +5,9 @@ from werkzeug import secure_filename
 from flask.ext.login import login_required, current_user
 from flask import Response, Blueprint, render_template, url_for, redirect, make_response, request, jsonify, flash, current_app
 
-from .forms import NewSiteForm, UploadFilesForm, CreateFolderForm
+from .forms import NewSiteForm, UploadFilesForm, CreateFolderForm, CreateFileForm
 from .models import Site
-from .utils import upload_to_s3, make_s3_path, owns_site, delete_s3_file, get_keys, create_folder_in_s3
+from .utils import upload_to_s3, make_s3_path, owns_site, delete_s3_file, get_keys, create_folder_in_s3, create_file_in_s3
 from stacksites.utils import flash_errors
 
 IMAGE_EXTS = ['jpg', 'png', 'svg', 'gif', 'bmp', 'webp']
@@ -30,7 +30,7 @@ def view_site(username, site_name):
     return make_response(r.get(target).text)
 
 
-def manage_site(site_id, folder_key=None, upload_form=None, create_folder_form=None):
+def manage_site(site_id, folder_key=None, upload_form=None, create_folder_form=None, create_file_form=None):
     site = Site.get_by_id(site_id)
     owns_site(site)
 
@@ -40,13 +40,16 @@ def manage_site(site_id, folder_key=None, upload_form=None, create_folder_form=N
     if create_folder_form is None:
         create_folder_form = CreateFolderForm()
 
+    if create_file_form is None:
+        create_file_form = CreateFolderForm()
+
     paths = None
     if folder_key:
         path_elems = [e for e in folder_key.split('/') if e]
         paths = [{elem: '/'.join(path_elems[:ind + 1])} for ind, elem in enumerate(path_elems)]
         paths = paths[2:]
 
-    return render_template('sites/manage.html', site=site, upload_form=upload_form, create_folder_form=create_folder_form, image_exts=IMAGE_EXTS, folder_key=folder_key, paths=paths)
+    return render_template('sites/manage.html', site=site, upload_form=upload_form, create_folder_form=create_folder_form, create_file_form=create_file_form, image_exts=IMAGE_EXTS, folder_key=folder_key, paths=paths)
 
 
 def manage_site_folder(*args, **kwargs):
@@ -175,3 +178,31 @@ def view_s3_index(site_id):
     site = Site.get_by_id(site_id)
     s3_path = make_s3_path(site.user.username, site.name, '{}/{}/index.html'.format(site.user.username, site.name))
     return redirect(s3_path)
+
+
+def create_file(site_id):
+    site = Site.get_by_id(site_id)
+    owns_site(site)
+
+    form = CreateFolderForm()
+    
+    folder_key = '{}/{}'.format(site.user.username, site.name)
+    if form.validate_on_submit():
+        create_file_in_s3(site.user.username, site.name, form.name.data, folder_key)
+        return redirect(url_for('sites.manage_site', site_id=site.id))
+    else:
+        return manage_site(site_id=site_id, create_file_form=form)
+
+
+def create_file_in_folder(site_id, folder_key):
+    site = Site.get_by_id(site_id)
+    owns_site(site)
+
+    form = CreateFolderForm()
+
+    if form.validate_on_submit():
+        create_file_in_s3(site.user.username, site.name, form.name.data, folder_key)
+        folder_key = '/'.join(folder_key.split('/')[:-1]) + '/'
+        return redirect(url_for('sites.manage_site_folder', site_id=site.id, folder_key=folder_key))
+    else:
+        return manage_site_folder(site_id=site_id, create_file_form=form, folder_key=folder_key)

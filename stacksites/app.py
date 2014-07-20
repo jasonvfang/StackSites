@@ -67,6 +67,8 @@ def register_controllers():
     sites_bp.add_url_rule('/delete_site/<int:site_id>', methods=['POST'], view_func=login_required(sites.views.delete_site))
     sites_bp.add_url_rule('/create_folder/<int:site_id>', methods=['POST'], view_func=login_required(sites.views.create_folder))
     sites_bp.add_url_rule('/create_folder_in_folder/<int:site_id>/<path:folder_key>', methods=['POST'], view_func=login_required(sites.views.create_folder_in_folder))
+    sites_bp.add_url_rule('/create_file/<int:site_id>', methods=['POST'], view_func=login_required(sites.views.create_file))
+    sites_bp.add_url_rule('/create_file_in_folder/<int:site_id>/<path:folder_key>', methods=['POST'], view_func=login_required(sites.views.create_file_in_folder))
 
 
 def register_extensions(app):

@@ -50,23 +50,23 @@
   {% endif %}
   </div>
   <div class='col-lg-3'>
-    <h3>Upload Files</h3>
+    <h3>Create File</h3>
     {% if folder_key %}
-    <form role='form' id='uploadForm' method='post' action="{{ url_for('sites.upload_in_folder', site_id=site.id, folder_key=folder_key) }}" enctype='multipart/form-data'>
+    <form role='form' id='createFileForm' method='post' action="{{ url_for('sites.create_file_in_folder', site_id=site.id, folder_key=folder_key) }}">
     {% else %}
-    <form role='form' id='uploadForm' method='post' action="{{ url_for('sites.upload', site_id=site.id) }}" enctype='multipart/form-data'>
+    <form role='form' id='createFileForm' method='post' action="{{ url_for('sites.create_file', site_id=site.id) }}">
     {% endif %}
-      {{ upload_form.hidden_tag() }}
-      <div class='form-group'>
-        <label>Upload only web-related files.</label>
-        {% if upload_form.files.errors %}
-        {% for error in upload_form.files.errors %}
-        <p class='text-danger'>{{error}}</p>
-        {% endfor %}
-        {% endif %}
-        {{ upload_form.files(multiple=True) }}
-      </div>
-      <button type="submit" class="btn btn-primary"><i class="fa fa-cloud-upload"></i> Upload Files</button>
+    {{ create_file_form.hidden_tag() }}
+    <div class='form-group'>
+      <label>The following characters are not allowed:<p><strong>\ / : ? * < > " |</strong></p></label>
+      {% if create_file_form.name.errors %}
+      {% for error in create_file_form.name.errors %}
+      <p class='text-danger'>{{ error }}</p>
+      {% endfor %}
+      {% endif %}
+      {{ create_file_form.name(type='text', placeholder='about.html', class='form-control') }}
+    </div>
+    <button type='submit' class='btn btn-primary'><i class='fa fa-file'></i> Create File</button>
     </form>
   </div>
   <div class='col-lg-3'>
@@ -92,6 +92,26 @@
 </div>
 <hr>
 <div class='row'>
+  <div class='col-lg-4'>
+    <h3>Upload Files</h3>
+    {% if folder_key %}
+    <form role='form' id='uploadForm' method='post' action="{{ url_for('sites.upload_in_folder', site_id=site.id, folder_key=folder_key) }}" enctype='multipart/form-data'>
+    {% else %}
+    <form role='form' id='uploadForm' method='post' action="{{ url_for('sites.upload', site_id=site.id) }}" enctype='multipart/form-data'>
+    {% endif %}
+      {{ upload_form.hidden_tag() }}
+      <div class='form-group'>
+        <label>Upload only web-related files.</label>
+        {% if upload_form.files.errors %}
+        {% for error in upload_form.files.errors %}
+        <p class='text-danger'>{{error}}</p>
+        {% endfor %}
+        {% endif %}
+        {{ upload_form.files(multiple=True) }}
+      </div>
+      <button type="submit" class="btn btn-primary"><i class="fa fa-cloud-upload"></i> Upload Files</button>
+    </form>
+  </div>
   <div class='col-lg-4'>
     <h4>Delete Site <span class='text-danger'><em>( Careful! )</em></span></h4>
     <button class='btn btn-danger' id='deleteSiteButton' delete-target="{{ url_for('sites.delete_site', site_id=site.id) }}">Permanently Delete Site</button>

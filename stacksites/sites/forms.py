@@ -74,3 +74,18 @@ class CreateFolderForm(Form):
             return False
             
         return True
+
+
+class CreateFileForm(Form):
+    name = TextField('name', validators=[DataRequired('You must enter a name for your new file.')])
+
+    def validate(self):
+        initial_validation = super(CreateFileForm, self).validate()
+        if not initial_validation:
+            return False
+
+        if any(map(lambda char: char in RESTRICTED_CHARS, self.name.data)):
+            self.name.errors.append('The following characters are not allowed: {}'.format(' '.join(RESTRICTED_CHARS)))
+            return False
+            
+        return True
