@@ -30,56 +30,47 @@ def view_site(username, site_name):
     return make_response(r.get(target).text)
 
 
-def manage_site(site_id, form=None):
+def manage_site(site_id, folder_key=None, upload_form=None):
     site = Site.get_by_id(site_id)
     owns_site(site)
 
-    if form is None:
-        form = UploadFilesForm()
+    if upload_form is None:
+        upload_form = UploadFilesForm()
 
-    return render_template('sites/manage.html', site=site, form=form, image_exts=IMAGE_EXTS, folder_prefix=None)
+    paths = None
+    if folder_key:
+        path_elems = [e for e in folder_key.split('/') if e]
+        paths = [{elem: '/'.join(path_elems[:ind + 1])} for ind, elem in enumerate(path_elems)]
+        paths = paths[2:]
 
-
-def manage_site_folder(site_id, folder_prefix):
-    site = Site.get_by_id(site_id)
-    owns_site(site)
-    path_elems = [e for e in folder_prefix.split('/') if e]
-    paths = [{elem: '/'.join(path_elems[:ind + 1])} for ind, elem in enumerate(path_elems)]
-    return render_template('sites/manage.html', site=site, form=UploadFilesForm(), image_exts=IMAGE_EXTS, folder_prefix=folder_prefix, paths=paths[2:])
+    return render_template('sites/manage.html', site=site, upload_form=upload_form, image_exts=IMAGE_EXTS, folder_key=folder_key, paths=paths)
 
 
-def upload(site_id):
+def manage_site_folder(*args, **kwargs):
+    return manage_site(*args, **kwargs)
+
+
+def upload(site_id, folder_key=None):
     site = Site.get_by_id(site_id)
     owns_site(site)
     form = UploadFilesForm()
+    import ipdb
+    ipdb.set_trace()
 
     if form.validate_on_submit():
         files = request.files.getlist('files')
 
         for file in files:
-            filename = secure_filename(file.filename)
+            filename = folder_key + secure_filename(file.filename) if folder_key is not None else secure_filename(file.filename)
             upload_to_s3(file, current_user.username, site.name, filename)
-        return redirect(url_for('sites.manage_site', site_id=site_id))
+        return redirect(url_for('sites.manage_site_folder', site_id=site_id, folder_key=folder_key))
 
     else:
-        return manage_site(site_id, form)
+        return manage_site_folder(site_id, upload_form=form, folder_key=folder_key)
 
 
-def upload_in_folder(site_id, folder_prefix):
-    site = Site.get_by_id(site_id)
-    owns_site(site)
-    form = UploadFilesForm()
-
-    if form.validate_on_submit():
-        files = request.files.getlist('files')
-
-        for file in files:
-            filename = folder_prefix + secure_filename(file.filename)
-            upload_to_s3(file, current_user.username, site.name, filename)
-        return redirect(url_for('sites.manage_site_folder', site_id=site_id, folder_prefix=folder_prefix))
-
-    else:
-        return manage_site(site_id, form)
+def upload_in_folder(*args, **kwargs):
+    return upload(*args, **kwargs)
 
 
 def edit_file(site_id, key):
@@ -109,36 +100,41 @@ def view_file(username, site_id, key):
     return Response(response=r.get(s3_path).content, mimetype=mimetype)
 
 
-def delete_file(site_id, key):
+def delete_file(site_id, folder_key):
     site = Site.get_by_id(site_id)
     owns_site(site)
-    delete_s3_file(site.user.username, site.name, key)
 
-    folder_prefix = '/'.join(key.split('/')[:-1]) + '/'
-    return redirect(url_for('sites.manage_site_folder', site_id=site_id, folder_prefix=folder_prefix))
+    import ipdb
+    ipdb.set_trace()
+    delete_s3_file(site.user.username, site.name, folder_key)
+
+    folder_key = '/'.join(folder_key.split('/')[:-1]) + '/'
+    return redirect(url_for('sites.manage_site_folder', site_id=site_id, folder_key=folder_key))
 
 
-def _delete_folder(username, site_name, key):
-    for file_key in get_keys(username, site_name, key):
+def _delete_folder(username, site_name, folder_key):
+    for file_key in get_keys(username, site_name, folder_key):
         if file_key.name[-1] == '/':
             _delete_folder(username, site_name, file_key.name)
         else:
             delete_s3_file(username, site_name, file_key.name)
 
-    delete_s3_file(username, site_name, key)
+    delete_s3_file(username, site_name, folder_key)
 
 
-def delete_folder(site_id, key):
+def delete_folder(site_id, folder_key):
     site = Site.get_by_id(site_id)
     owns_site(site)
 
+    import ipdb
+    ipdb.set_trace()
     username = site.user.username
     site_name = site.name
 
-    _delete_folder(username, site_name, key)
+    _delete_folder(username, site_name, folder_key)
 
-    folder_prefix = '/'.join(key.split('/')[:-2]) + '/'
-    return redirect(url_for('sites.manage_site_folder', site_id=site_id, folder_prefix=folder_prefix))
+    folder_key = '/'.join(folder_key.split('/')[:-2]) + '/'
+    return redirect(url_for('sites.manage_site_folder', site_id=site_id, folder_key=folder_key))
 
 
 def delete_site(site_id):
