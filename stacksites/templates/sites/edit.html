@@ -44,7 +44,7 @@
       </div>
       <div class='panel-body'>
         <div>
-          <iframe width="100%" id="previewWindow" style="height: 50em;" src="{{ url_for('public.view_site_home', username=current_user.username, path=site.name) }}"></iframe>
+          <iframe width="100%" id="previewWindow" style="height: 50em;" src="{{ url_for('sites.view_s3_index', site_id=site.id) }}"></iframe>
         </div>
       </div>
     </div>

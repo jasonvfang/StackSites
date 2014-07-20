@@ -169,3 +169,9 @@ def create_folder_in_folder(site_id, folder_key):
         return redirect(url_for('sites.manage_site_folder', site_id=site.id, folder_key=folder_key))
     else:
         return manage_site_folder(site_id=site_id, folder_key=folder_key, create_folder_form=form)
+
+
+def view_s3_index(site_id):
+    site = Site.get_by_id(site_id)
+    s3_path = make_s3_path(site.user.username, site.name, '{}/{}/index.html'.format(site.user.username, site.name))
+    return redirect(s3_path)
