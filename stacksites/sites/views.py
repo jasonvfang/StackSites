@@ -152,9 +152,9 @@ def create_folder(site_id):
     folder_key = '{}/{}'.format(site.user.username, site.name)
     if form.validate_on_submit():
         create_folder_in_s3(site.user.username, site.name, form.name.data, folder_key)
-        return redirect(url_for('sites.manage_site_folder', site_id=site.id, folder_key=folder_key))
+        return redirect(url_for('sites.manage_site', site_id=site.id))
     else:
-        return manage_site_folder(site_id=site_id, folder_key=None, create_folder_form=form)
+        return manage_site(site_id=site_id, create_folder_form=form)
 
 
 def create_folder_in_folder(site_id, folder_key):
