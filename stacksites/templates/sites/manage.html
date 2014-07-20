@@ -13,6 +13,7 @@
         {% endfor %}
       {% endif %}
     </ol>
+  {% if site.get_files(folder_key) %}
     <table class='table table-striped'>
       <thead>
         <tr>
@@ -26,12 +27,14 @@
         <tr>
           {% if file['ext'] in image_exts %}
           <td>{{file['name']}}</td>
+          <td>{{ file['size']|filesizeformat }}</td>
           {% elif file['is_folder'] %}
           <td><i class="fa fa-folder"></i> <a href="{{ url_for('sites.manage_site_folder', site_id=site.id, folder_key=file['key']) }}">{{ file['name'] }}</a></td>
+          <td></td>
           {% else %}
           <td><a href="{{ url_for('sites.edit_file', site_id=site.id, key=file['key']) }}">{{ file['name'] }}</a></td>
-          {% endif %}
           <td>{{ file['size']|filesizeformat }}</td>
+          {% endif %}
           {% if file['is_folder'] %}
           <td><button class='btn btn-danger fileDelete' file-name={{file['key']}} type="button" delete-target="{{ url_for('sites.delete_folder', site_id=site.id, folder_key=file['key']) }}">Delete</button></td>
           {% else %}
@@ -39,8 +42,12 @@
           {% endif %}
         </tr>
         {% endfor %}
+
       </tbody>
     </table>
+  {% else %}
+    <h4>No files to show here</h4>
+  {% endif %}
   </div>
   <div class='col-lg-3'>
     <h3>Upload Files</h3>
