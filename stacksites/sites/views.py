@@ -148,11 +148,11 @@ def create_folder(site_id):
     owns_site(site)
 
     form = CreateFolderForm()
-
+    
+    folder_key = '{}/{}'.format(site.user.username, site.name)
     if form.validate_on_submit():
-        folder_key = '{}/{}'.format(site.user.username, site.name)
         create_folder_in_s3(site.user.username, site.name, form.name.data, folder_key)
-        return redirect(url_for('sites.manage_site_folder', site_id=site.id, folder_key=None))
+        return redirect(url_for('sites.manage_site_folder', site_id=site.id, folder_key=folder_key))
     else:
         return manage_site_folder(site_id=site_id, folder_key=None, create_folder_form=form)
 
