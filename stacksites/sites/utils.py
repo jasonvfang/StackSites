@@ -143,6 +143,13 @@ def delete_s3_file(username, site_name, key):
     key.delete()
 
 
+def create_folder_in_s3(username, site_name, folder_name, folder_key):
+    bucket = get_bucket()
+    key = bucket.new_key('{}/{}/'.format(folder_key, folder_name))
+    key.set_contents_from_string('')
+    key.set_acl('public-read')
+
+
 def owns_site(site):
     if site is None:
         abort(404)

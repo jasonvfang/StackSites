@@ -17,6 +17,8 @@ ALLOWED_FILE_EXTS = [
     'html', 'js', 'css'
 ]
 
+RESTRICTED_CHARS = ['\\', '/', ':', '?', '*', '<', '>', '"', '|']
+
 FILES_ALLOWED_MSG = 'You can only upload files with one of the following extensions:\n' + ' '.join(ALLOWED_FILE_EXTS)
 
 
@@ -57,3 +59,18 @@ class NewSiteForm(Form):
 class UploadFilesForm(Form):
     files = FileField('files', validators=[FileRequired("You must select a file."),
                                            FileAllowed(ALLOWED_FILE_EXTS, FILES_ALLOWED_MSG)])
+
+
+class CreateFolderForm(Form):
+    name = TextField('name', validators=[DataRequired('You must enter a name for your new folder.')])
+
+    def validate(self):
+        initial_validation = super(CreateFolderForm, self).validate()
+        if not initial_validation:
+            return False
+
+        if any(map(lambda char: char in RESTRICTED_CHARS, self.name.data)):
+            self.name.errors.append('The following characters are not allowed: {}'.format(' '.join(RESTRICTED_CHARS)))
+            return False
+            
+        return True

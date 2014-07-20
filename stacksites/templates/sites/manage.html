@@ -42,7 +42,7 @@
       </tbody>
     </table>
   </div>
-  <div class='col-lg-6'>
+  <div class='col-lg-3'>
     <h3>Upload Files</h3>
     {% if folder_key %}
     <form role='form' id='uploadForm' method='post' action="{{ url_for('sites.upload_in_folder', site_id=site.id, folder_key=folder_key) }}" enctype='multipart/form-data'>
@@ -60,6 +60,26 @@
         {{ upload_form.files(multiple=True) }}
       </div>
       <button type="submit" class="btn btn-primary"><i class="fa fa-cloud-upload"></i> Upload Files</button>
+    </form>
+  </div>
+  <div class='col-lg-3'>
+    <h3>Create Folder</h3>
+    {% if folder_key %}
+    <form role='form' id='createFolderForm' method='post' action="{{ url_for('sites.create_folder_in_folder', site_id=site.id, folder_key=folder_key) }}">
+    {% else %}
+    <form role='form' id='createFolderForm' method='post' action="{{ url_for('sites.create_folder', site_id=site.id) }}">
+    {% endif %}
+    {{ create_folder_form.hidden_tag() }}
+    <div class='form-group'>
+      <label>The following characters are not allowed:<p><strong>\ / : ? * < > " |</strong></p></label>
+      {% if create_folder_form.name.errors %}
+      {% for error in create_folder_form.name.errors %}
+      <p class='text-danger'>{{ error }}</p>
+      {% endfor %}
+      {% endif %}
+      {{ create_folder_form.name(type='text', placeholder='img', class='form-control') }}
+    </div>
+    <button type='submit' class='btn btn-primary'><i class='fa fa-folder'></i> Create Folder</button>
     </form>
   </div>
 </div>

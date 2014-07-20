@@ -5,9 +5,9 @@ from werkzeug import secure_filename
 from flask.ext.login import login_required, current_user
 from flask import Response, Blueprint, render_template, url_for, redirect, make_response, request, jsonify, flash, current_app
 
-from .forms import NewSiteForm, UploadFilesForm
+from .forms import NewSiteForm, UploadFilesForm, CreateFolderForm
 from .models import Site
-from .utils import upload_to_s3, make_s3_path, owns_site, delete_s3_file, get_keys
+from .utils import upload_to_s3, make_s3_path, owns_site, delete_s3_file, get_keys, create_folder_in_s3
 from stacksites.utils import flash_errors
 
 IMAGE_EXTS = ['jpg', 'png', 'svg', 'gif', 'bmp', 'webp']
@@ -30,12 +30,15 @@ def view_site(username, site_name):
     return make_response(r.get(target).text)
 
 
-def manage_site(site_id, folder_key=None, upload_form=None):
+def manage_site(site_id, folder_key=None, upload_form=None, create_folder_form=None):
     site = Site.get_by_id(site_id)
     owns_site(site)
 
     if upload_form is None:
         upload_form = UploadFilesForm()
+
+    if create_folder_form is None:
+        create_folder_form = CreateFolderForm()
 
     paths = None
     if folder_key:
@@ -43,7 +46,7 @@ def manage_site(site_id, folder_key=None, upload_form=None):
         paths = [{elem: '/'.join(path_elems[:ind + 1])} for ind, elem in enumerate(path_elems)]
         paths = paths[2:]
 
-    return render_template('sites/manage.html', site=site, upload_form=upload_form, image_exts=IMAGE_EXTS, folder_key=folder_key, paths=paths)
+    return render_template('sites/manage.html', site=site, upload_form=upload_form, create_folder_form=create_folder_form, image_exts=IMAGE_EXTS, folder_key=folder_key, paths=paths)
 
 
 def manage_site_folder(*args, **kwargs):
@@ -54,8 +57,6 @@ def upload(site_id, folder_key=None):
     site = Site.get_by_id(site_id)
     owns_site(site)
     form = UploadFilesForm()
-    import ipdb
-    ipdb.set_trace()
 
     if form.validate_on_submit():
         files = request.files.getlist('files')
@@ -104,8 +105,6 @@ def delete_file(site_id, folder_key):
     site = Site.get_by_id(site_id)
     owns_site(site)
 
-    import ipdb
-    ipdb.set_trace()
     delete_s3_file(site.user.username, site.name, folder_key)
 
     folder_key = '/'.join(folder_key.split('/')[:-1]) + '/'
@@ -126,8 +125,6 @@ def delete_folder(site_id, folder_key):
     site = Site.get_by_id(site_id)
     owns_site(site)
 
-    import ipdb
-    ipdb.set_trace()
     username = site.user.username
     site_name = site.name
 
@@ -144,3 +141,31 @@ def delete_site(site_id):
     site.delete_site()
     flash("Your site '{0}' has been permanently deleted.".format(name), 'info')
     return redirect(url_for('public.user_dashboard'))
+
+
+def create_folder(site_id):
+    site = Site.get_by_id(site_id)
+    owns_site(site)
+
+    form = CreateFolderForm()
+
+    if form.validate_on_submit():
+        folder_key = '{}/{}'.format(site.user.username, site.name)
+        create_folder_in_s3(site.user.username, site.name, form.name.data, folder_key)
+        return redirect(url_for('sites.manage_site_folder', site_id=site.id, folder_key=None))
+    else:
+        return manage_site_folder(site_id=site_id, folder_key=None, create_folder_form=form)
+
+
+def create_folder_in_folder(site_id, folder_key):
+    site = Site.get_by_id(site_id)
+    owns_site(site)
+
+    form = CreateFolderForm()
+
+    if form.validate_on_submit():
+        create_folder_in_s3(site.user.username, site.name, form.name.data, folder_key)
+        folder_key = '/'.join(folder_key.split('/')[:-1]) + '/'
+        return redirect(url_for('sites.manage_site_folder', site_id=site.id, folder_key=folder_key))
+    else:
+        return manage_site_folder(site_id=site_id, folder_key=folder_key, create_folder_form=form)
