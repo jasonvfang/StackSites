@@ -33,3 +33,10 @@ class DevConfig(Config):
     DB_PATH = os.path.join(Config.PROJECT_ROOT, DB_NAME)
     ASSETS_DEBUG = True
     SERVER_NAME = '127.0.0.1.xip.io:5000'
+
+
+class TestConfig(DevConfig):
+
+    def __init__(self, db_path):
+        self.db_path = db_path
+        self.SQLALCHEMY_DATABASE_URI = 'sqlite:///{path}'.format(path=db_path)

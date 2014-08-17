@@ -10,10 +10,13 @@ from stacksites.extensions import (db, bcrypt, login_manager,
                                     migrate, mail, SSLify, csrf)
 
 
-def create_app():
+def create_app(config=None):
     app = Flask(__name__)
-    config_object = DevConfig if os.environ.get('DEBUG') == 'True' else ProdConfig
-    app.config.from_object(config_object)
+
+    if not config:
+        config = DevConfig if os.environ.get('DEBUG') == 'True' else ProdConfig
+
+    app.config.from_object(config)
 
     register_controllers()
 
