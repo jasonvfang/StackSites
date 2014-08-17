@@ -6,7 +6,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from datetime import datetime
 
 from stacksites.users.forms import (RegisterForm, LoginForm, ResendConfirmationForm,
-                                     ForgotPasswordForm, ResetPasswordForm, ChangeEmailForm, ChangePasswordForm)
+                                    ForgotPasswordForm, ResetPasswordForm, ChangeEmailForm, ChangePasswordForm)
 from stacksites.users.utils import send_confirmation_email, send_password_reset_email
 from stacksites.extensions import login_manager
 from stacksites.utils import flash_errors

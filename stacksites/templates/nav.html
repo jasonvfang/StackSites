@@ -71,7 +71,7 @@
       {% elif loginForm %}
         <p class="navbar-text navbar-right"><a class="navbar-link" href="{{ url_for('users.login_help') }}">Can't log in?</a></p>
         <form class='navbar-form navbar-left'>
-          <a class="btn btn-lg btn-primary" href="{{ url_for('users.register') }}" >Sign Up</a>
+          <a class="btn btn-lg btn-primary" href="{{ url_for('users.register') }}" id='signupButton'>Sign Up</a>
         </form>
 
         <form class='navbar-form navbar-right'>

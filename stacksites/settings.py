@@ -2,7 +2,16 @@
 import os
 
 
+def _setup_envvars():
+    with open('.env', 'r') as f:
+        for line in f:
+            split = line.split('=')
+            os.environ[split[0]] = split[1].replace('\n', '')
+
+
 class Config(object):
+    _setup_envvars()
+
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'ourincrediblejourney'
     APP_DIR = os.path.abspath(os.path.dirname(__file__))
     PROJECT_ROOT = os.path.abspath(os.path.join(APP_DIR, os.pardir))
@@ -36,7 +45,8 @@ class DevConfig(Config):
 
 
 class TestConfig(DevConfig):
+    TESTING = True
 
     def __init__(self, db_path):
         self.db_path = db_path
-        self.SQLALCHEMY_DATABASE_URI = 'sqlite:///{path}'.format(path=db_path)
+        self.SQLALCHEMY_DATABASE_URI = 'sqlite:///{path}'.format(path=self.db_path)
