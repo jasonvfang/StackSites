@@ -7,7 +7,7 @@ from stacksites import public, users, sites
 from stacksites.assets import assets
 from stacksites.settings import ProdConfig, DevConfig
 from stacksites.extensions import (db, bcrypt, login_manager,
-                                    migrate, mail, SSLify, csrf)
+                                   migrate, mail, SSLify, csrf)
 
 
 def create_app(config=None):
@@ -18,9 +18,9 @@ def create_app(config=None):
 
     app.config.from_object(config)
 
-    register_controllers()
-
     register_blueprints(app)
+
+    register_controllers()
 
     register_extensions(app)
 
@@ -30,7 +30,7 @@ def create_app(config=None):
 def register_controllers():
     from flask.ext.login import login_required
 
-    public_bp  = public.views.blueprint
+    public_bp = public.views.blueprint
 
     public_bp.add_url_rule('/', subdomain='<username>', view_func=public.views.view_site_home, methods=['GET'], defaults={'path': None})
     public_bp.add_url_rule('/<path>', subdomain='<username>', view_func=public.views.view_site_home, methods=['GET'])
