@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pytest
+import flask
 
 import utils
 from stacksites.users.models import User
@@ -98,3 +99,49 @@ class TestLogin(object):
         }, client=client)
 
         assert 'Wrong password' in res.data
+
+
+class TestPasswordReset(object):
+
+    @pytest.yield_fixture
+    def user(request):
+        user = User.create(**{
+            'username': 'starlord',
+            'email': 'starlord@gmail.com',
+            'password': 'ihaveaplan'
+        })
+        user.activate()
+
+        yield user
+
+        user.delete_self()
+
+    def test_reset_existing_user(self, user, client):
+        reset_url = flask.url_for('users.reset_password', token=user.get_reset_token(), _external=False)
+        res = client.get(reset_url)
+
+        assert res.status_code == 200
+        assert 'resetForm' in res.data
+
+        res = client.post(reset_url, data={'email': 'starlord@gmail.com', 'password': 'ihaveaplan2', 'confirm': 'ihaveaplan2'}, follow_redirects=True)
+
+        assert res.status_code == 200
+        assert 'Your password has been reset.' in res.data
+        assert user.check_password('ihaveaplan2') is True
+
+        res = client.post(reset_url, data={'email': 'starlord@gmail.com', 'password': 'thatsnotareallaugh', 'confirm': 'thatsnotareallaugh'}, follow_redirects=True)
+
+        assert 'Invalid or expired password reset token.' in res.data
+        assert not user.check_password('thatsnotareallaugh')
+
+    def test_reset_same_password(self, client, user):
+        reset_url = flask.url_for('users.reset_password', token=user.get_reset_token(), _external=False)
+
+        reset_data = {
+            'email': 'starlord@gmail.com',
+            'password': 'ihaveaplan',
+            'confirm': 'ihaveaplan'
+        }
+        res = client.post(reset_url, data=reset_data, follow_redirects=True)
+
+        assert 'You cannot use the same password.' in res.data
