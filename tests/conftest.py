@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import tempfile
 
 import pytest
@@ -20,6 +21,8 @@ def app():
     yield app
 
     ctx.pop()
+    os.close(db_file)
+    os.unlink(db_path)
 
 
 @pytest.fixture(scope='session')
