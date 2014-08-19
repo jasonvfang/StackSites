@@ -18,11 +18,9 @@ def create_app(config=None):
 
     app.config.from_object(config)
 
-    register_blueprints(app)
-
-    register_controllers()
-
     register_extensions(app)
+
+    register_blueprints(app)
 
     return app
 
@@ -88,6 +86,7 @@ def register_extensions(app):
 
 
 def register_blueprints(app):
+    register_controllers()
     app.register_blueprint(public.views.blueprint)
     app.register_blueprint(users.views.blueprint)
     app.register_blueprint(sites.views.blueprint)
