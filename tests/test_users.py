@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime, timedelta
 
 import pytest
 import flask
@@ -123,13 +124,22 @@ class TestPasswordReset(object):
         assert res.status_code == 200
         assert 'resetForm' in res.data
 
-        res = client.post(reset_url, data={'email': 'starlord@gmail.com', 'password': 'ihaveaplan2', 'confirm': 'ihaveaplan2'}, follow_redirects=True)
+        reset_data = {
+            'email': 'starlord@gmail.com',
+            'password': 'ihaveaplan2',
+            'confirm': 'ihaveaplan2'
+        }
+        res = client.post(reset_url, data=reset_data, follow_redirects=True)
 
         assert res.status_code == 200
         assert 'Your password has been reset.' in res.data
         assert user.check_password('ihaveaplan2') is True
 
-        res = client.post(reset_url, data={'email': 'starlord@gmail.com', 'password': 'thatsnotareallaugh', 'confirm': 'thatsnotareallaugh'}, follow_redirects=True)
+        res = client.post(reset_url, data={
+            'email': 'starlord@gmail.com',
+            'password': 'thatsnotareallaugh',
+            'confirm': 'thatsnotareallaugh'
+        }, follow_redirects=True)
 
         assert 'Invalid or expired password reset token.' in res.data
         assert not user.check_password('thatsnotareallaugh')
@@ -137,11 +147,25 @@ class TestPasswordReset(object):
     def test_reset_same_password(self, client, user):
         reset_url = flask.url_for('users.reset_password', token=user.get_reset_token(), _external=False)
 
-        reset_data = {
+        res = client.post(reset_url, data={
             'email': 'starlord@gmail.com',
             'password': 'ihaveaplan',
             'confirm': 'ihaveaplan'
-        }
-        res = client.post(reset_url, data=reset_data, follow_redirects=True)
+        }, follow_redirects=True)
 
         assert 'You cannot use the same password.' in res.data
+
+    def test_reset_expired(self, client, user):
+        reset_url = flask.url_for('users.reset_password', token=user.get_reset_token(), _external=False)
+
+        user.password_reset_expiration = datetime.utcnow() - timedelta(hours=1)
+        user.save()
+
+        res = client.post(reset_url, data={
+            'email': 'starlord@gmail.com',
+            'password': 'thatsnotareallaugh',
+            'confirm': 'thatsnotareallaugh'
+        }, follow_redirects=True)
+
+        assert 'Invalid or expired password reset token.' in res.data
+        assert not user.check_password('thatsnotareallaugh')
