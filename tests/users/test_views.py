@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import pytest
 import flask
 
-import utils
+from tests import utils
 from stacksites.users.models import User
 
 
@@ -187,6 +187,17 @@ class TestChangeSettings(object):
 
         user.delete_self()
 
+    @pytest.yield_fixture(scope='function')
+    def other_user(request):
+        user = User.create(**{
+            'username': 'rocket',
+            'email': 'rocket@example.com',
+            'password': 'youdonthaveaplan'
+        })
+        user.activate()
+        yield user
+        user.delete_self()
+
     def login(self, client):
         return login(data={
             'creds': 'starlord@example.com',
@@ -212,14 +223,8 @@ class TestChangeSettings(object):
 
         assert 'Your Sites' in res.data
 
-    def test_change_email_different_user(self, client, user):
+    def test_change_email_different_user(self, client, user, other_user):
         res = self.login(client)
-
-        other_user = User.create(**{
-            'username': 'rocket',
-            'email': 'rocket@example.com',
-            'password': 'youdonthaveaplan'
-        })
 
         res = client.post('/users/change_email', data={'email': 'rocket@example.com'}, follow_redirects=True)
 
