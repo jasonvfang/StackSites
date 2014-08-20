@@ -8,6 +8,10 @@ import utils
 from stacksites.users.models import User
 
 
+def login(data, client):
+    return client.post('/users/login', data=data, follow_redirects=True)
+
+
 class TestRegistration(object):
 
     def test_create_delete_new_valid_user(self, client, s3_bucket, registration_data):
@@ -57,7 +61,7 @@ class TestLogin(object):
     def user(request):
         user = User.create(**{
             'username': 'starlord',
-            'email': 'starlord@gmail.com',
+            'email': 'starlord@example.com',
             'password': 'ihaveaplan'
         })
         user.activate()
@@ -66,11 +70,8 @@ class TestLogin(object):
 
         user.delete_self()
 
-    def login(self, data, client):
-        return client.post('/users/login', data=data, follow_redirects=True)
-
     def test_existing_user(self, client, user):
-        res = self.login(data={
+        res = login(data={
             'creds': 'starlord',
             'password': 'ihaveaplan'
         }, client=client)
@@ -86,7 +87,7 @@ class TestLogin(object):
         assert 'users/login_help' in res.data
 
     def test_nonexistent_user(self, client):
-        res = self.login(data={
+        res = login(data={
             'creds': 'rocket',
             'password': 'ohyeaah'
         }, client=client)
@@ -94,7 +95,7 @@ class TestLogin(object):
         assert "We didn&#39;t recognize that email address or username." in res.data
 
     def test_invalid_credentials(self, client, user):
-        res = self.login(data={
+        res = login(data={
             'creds': 'starlord',
             'password': 'ihaveaplan2'
         }, client=client)
@@ -108,7 +109,7 @@ class TestPasswordReset(object):
     def user(request):
         user = User.create(**{
             'username': 'starlord',
-            'email': 'starlord@gmail.com',
+            'email': 'starlord@example.com',
             'password': 'ihaveaplan'
         })
         user.activate()
@@ -125,7 +126,7 @@ class TestPasswordReset(object):
         assert 'resetForm' in res.data
 
         reset_data = {
-            'email': 'starlord@gmail.com',
+            'email': 'starlord@example.com',
             'password': 'ihaveaplan2',
             'confirm': 'ihaveaplan2'
         }
@@ -136,7 +137,7 @@ class TestPasswordReset(object):
         assert user.check_password('ihaveaplan2') is True
 
         res = client.post(reset_url, data={
-            'email': 'starlord@gmail.com',
+            'email': 'starlord@example.com',
             'password': 'thatsnotareallaugh',
             'confirm': 'thatsnotareallaugh'
         }, follow_redirects=True)
@@ -148,7 +149,7 @@ class TestPasswordReset(object):
         reset_url = flask.url_for('users.reset_password', token=user.get_reset_token(), _external=False)
 
         res = client.post(reset_url, data={
-            'email': 'starlord@gmail.com',
+            'email': 'starlord@example.com',
             'password': 'ihaveaplan',
             'confirm': 'ihaveaplan'
         }, follow_redirects=True)
@@ -162,10 +163,85 @@ class TestPasswordReset(object):
         user.save()
 
         res = client.post(reset_url, data={
-            'email': 'starlord@gmail.com',
+            'email': 'starlord@example.com',
             'password': 'thatsnotareallaugh',
             'confirm': 'thatsnotareallaugh'
         }, follow_redirects=True)
 
         assert 'Invalid or expired password reset token.' in res.data
         assert not user.check_password('thatsnotareallaugh')
+
+
+class TestChangeSettings(object):
+
+    @pytest.yield_fixture(scope='function')
+    def user(request):
+        user = User.create(**{
+            'username': 'starlord',
+            'email': 'starlord@example.com',
+            'password': 'ihaveaplan'
+        })
+        user.activate()
+
+        yield user
+
+        user.delete_self()
+
+    def login(self, client):
+        return login(data={
+            'creds': 'starlord@example.com',
+            'password': 'ihaveaplan'
+        }, client=client)
+
+    def logout(self, client):
+        return client.post('/users/logout', follow_redirects=True)
+
+    def test_change_email(self, client, user):
+        res = self.login(client)
+
+        res = client.post('/users/change_email', data={'email': 'noonecaresgroot@example.com'}, follow_redirects=True)
+
+        assert user.email == 'noonecaresgroot@example.com'
+
+        res = self.logout(client)
+
+        res = client.post('/users/login', data={
+            'creds': 'noonecaresgroot@example.com',
+            'password': 'ihaveaplan'
+        }, follow_redirects=True)
+
+        assert 'Your Sites' in res.data
+
+    def test_change_email_different_user(self, client, user):
+        res = self.login(client)
+
+        other_user = User.create(**{
+            'username': 'rocket',
+            'email': 'rocket@example.com',
+            'password': 'youdonthaveaplan'
+        })
+
+        res = client.post('/users/change_email', data={'email': 'rocket@example.com'}, follow_redirects=True)
+
+        assert 'That email address is being used by another user.' in res.data
+        assert user.email != 'rocket@example.com'
+
+    def test_change_password(self, client, user):
+        res = self.login(client)
+
+        assert 'Your Sites' in res.data
+
+        res = client.post('/users/change_password', data={
+            'old_password': 'ihaveaplan',
+            'new_password': 'ihaveaplanb',
+            'confirm_new': 'ihaveaplanb'
+        }, follow_redirects=True)
+
+        assert 'Your password has been changed.' in res.data
+
+        res = login(data={
+            'creds': 'starlord@example.com',
+            'password': 'ihaveaplanb'
+        }, client=client)
+
+        assert 'Your Sites' in res.data
